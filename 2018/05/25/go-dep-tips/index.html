@@ -1,0 +1,775 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="vendor,golang,shadowsocks,proxy,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="G2EX" type="application/atom+xml">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0">
+
+
+
+
+
+
+<meta name="description" content="Updated at 2019-02-23  因为 golang.org 被墙，go 项目打包 vendor 的时候，golang.org/x 的包是无法下载的。现在 go mod 成了官方主推的 vendor 管理工具，使用 go mod，可以在 go.mod 中使用 replace 替换成 github 上对应的库。例如： 1234replace (	golang.org/x/net v0.">
+<meta name="keywords" content="vendor,golang,shadowsocks,proxy">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Golang 项目被墙包的获取">
+<meta property="og:url" content="https://g2ex.top/2018/05/25/go-dep-tips/index.html">
+<meta property="og:site_name" content="G2EX">
+<meta property="og:description" content="Updated at 2019-02-23  因为 golang.org 被墙，go 项目打包 vendor 的时候，golang.org/x 的包是无法下载的。现在 go mod 成了官方主推的 vendor 管理工具，使用 go mod，可以在 go.mod 中使用 replace 替换成 github 上对应的库。例如： 1234replace (	golang.org/x/net v0.">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-11-25T02:09:19.688Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Golang 项目被墙包的获取">
+<meta name="twitter:description" content="Updated at 2019-02-23  因为 golang.org 被墙，go 项目打包 vendor 的时候，golang.org/x 的包是无法下载的。现在 go mod 成了官方主推的 vendor 管理工具，使用 go mod，可以在 go.mod 中使用 replace 替换成 github 上对应的库。例如： 1234replace (	golang.org/x/net v0.">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://g2ex.top/2018/05/25/go-dep-tips/">
+
+
+
+
+
+  <title> Golang 项目被墙包的获取 | G2EX </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?0056c67deccbe6617d059b40d352195f";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">G2EX</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="https://g2ex.top/2018/05/25/go-dep-tips/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="Yaming Gong">
+    <meta itemprop="description" content>
+    <meta itemprop="image" content="/avatar.png">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="G2EX">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="G2EX" src>
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Golang 项目被墙包的获取
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-05-25T18:18:00+00:00">
+                2018-05-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <a href="/2018/05/25/go-dep-tips/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/05/25/go-dep-tips/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>Updated at 2019-02-23</p>
+</blockquote>
+<p>因为 golang.org 被墙，go 项目打包 vendor 的时候，golang.org/x 的包是无法下载的。现在 <code>go mod</code> 成了官方主推的 vendor 管理工具，使用 go mod，可以在 <code>go.mod</code> 中使用 <code>replace</code> 替换成 github 上对应的库。例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">replace (</span><br><span class="line">	golang.org/x/net v0.0.0-20180821023952-922f4815f713 =&gt; github.com/golang/net v0.0.0-20180826012351-8a410e7b638d</span><br><span class="line">	...</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>我们一些老项目还是用的 <code>dep</code> 工具。不管是 go mod 还是 dep 管理 vendor 依赖包，都可以用 VPN 或代理的方式去使用。</p>
+<h2 id="Windows-Mac-平台"><a href="#Windows-Mac-平台" class="headerlink" title="Windows / Mac 平台"></a>Windows / Mac 平台</h2><p>Windows / Mac 下使用 <strong>Proxifier</strong> 全局强制代理。</p>
+<h2 id="Linux-平台"><a href="#Linux-平台" class="headerlink" title="Linux 平台"></a>Linux 平台</h2><h3 id="全局代理的方式"><a href="#全局代理的方式" class="headerlink" title="全局代理的方式"></a>全局代理的方式</h3><p>Linux 下可以通过设置 HTTP 代理，让 go mod、dep 命令（实际上是让 go、git 走代理）通过代理下载依赖的包。如果没有 HTTP 代理，只有 Shadowsocks 代理的话，可以安装 privoxy，把 SOCKS5 协议转换为 HTTP 协议，默认 privoxy 监听的是 8118 http 端口，以下脚本中的端口号根据自己的 HTTP 代理端口自行更改。（<code>shadowsocks-qt5</code> 版本的 SS 是直接支持 HTTP 代理的。）</p>
+<p>下面的别名方法可以在终端中设置一键代理和取消代理：</p>
+<p>在 <code>~/.bashrc</code> 或 <code>~/.bash_profile</code> 或 <code>~/.zshrc</code> （如果使用 zsh）中添加：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">alias proxy=&quot;</span><br><span class="line">    export http_proxy=http://127.0.0.1:8118/;</span><br><span class="line">    export https_proxy=http://127.0.0.1:8118/;</span><br><span class="line">    export all_proxy=http://127.0.0.1:8118/;</span><br><span class="line">    export no_proxy=localhost,127.0.0.0/8,::1;</span><br><span class="line">    export HTTP_PROXY=http://127.0.0.1:8118/;</span><br><span class="line">    export HTTPS_PROXY=http://127.0.0.1:8118/;</span><br><span class="line">    export ALL_PROXY=http://10.0.0.117:8118/;</span><br><span class="line">    export NO_PROXY=localhost,127.0.0.0/8,::1&quot;</span><br><span class="line">alias unproxy=&quot;</span><br><span class="line">    unset http_proxy;</span><br><span class="line">    unset https_proxy;</span><br><span class="line">    unset all_proxy;</span><br><span class="line">    unset no_proxy;</span><br><span class="line">    unset HTTP_PROXY;</span><br><span class="line">    unset HTTPS_PROXY;</span><br><span class="line">    unset ALL_PROXY;</span><br><span class="line">    unset NO_PROXY&quot;</span><br></pre></td></tr></table></figure>
+
+<p>添加完成后 <code>source ~/.bashrc</code> 或 <code>source ~/.bash_profile</code> 或 <code>source ~/.zshrc</code> 或 重启终端。需要用 go mod、dep 前执行 <code>proxy</code>，不需要代理了执行 <code>unproxy</code> 或直接退出当前终端。</p>
+<h3 id="只准对当前程序代理"><a href="#只准对当前程序代理" class="headerlink" title="只准对当前程序代理"></a>只准对当前程序代理</h3><p>使用 <code>proxychains-ng</code> 工具 <a href="https://github.com/rofl0r/proxychains-ng" target="_blank" rel="noopener">https://github.com/rofl0r/proxychains-ng</a></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ proxychains4 -q go mod vendor</span><br></pre></td></tr></table></figure>
+
+<h3 id="类似-VPN-全局的方式"><a href="#类似-VPN-全局的方式" class="headerlink" title="类似 VPN 全局的方式"></a>类似 VPN 全局的方式</h3><p>使用 <code>sshuttle</code> 工具 <a href="https://github.com/sshuttle/sshuttle" target="_blank" rel="noopener">https://github.com/sshuttle/sshuttle</a></p>
+<p>这也是我自己当前最常用的方式。sshuttle 通过设置本机<br>iptables 来实现本地请求转发到目标 ssh 主机，远程服务器不需要安装任何软件，只要你能 ssh 登录到远程服务器即可。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 转发所有流量到远程主机</span></span><br><span class="line">$ sshuttle -r username@ssh-server 0.0.0.0/0 -v</span><br><span class="line"></span><br><span class="line"><span class="comment"># 0.0.0.0/0 可以缩写成 0/0</span></span><br><span class="line">$ sshuttle -r username@ssh-server 0/0 -v</span><br><span class="line"></span><br><span class="line"><span class="comment"># 只转发 192.168.*.* 网段的请求到远程主机</span></span><br><span class="line">$ sshuttle -r username@ssh-server 192.168.0.0/16 -v</span><br><span class="line"></span><br><span class="line"><span class="comment"># -v 表示显示详情 </span></span><br><span class="line"><span class="comment"># -vv 表示更多的信息</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<p>实在嫌麻烦，就在国外的 VPS 上打包 vendor，然后把项目同步过来 - -!</p>
+<blockquote>
+<p>本文更是对代理的一种讨论。</p>
+</blockquote>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/vendor/" rel="tag"># vendor</a>
+          
+            <a href="/tags/golang/" rel="tag"># golang</a>
+          
+            <a href="/tags/shadowsocks/" rel="tag"># shadowsocks</a>
+          
+            <a href="/tags/proxy/" rel="tag"># proxy</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/03/11/ethereum-guide/" rel="next" title="以太坊开发填坑指北">
+                <i class="fa fa-chevron-left"></i> 以太坊开发填坑指北
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/06/28/hexo-with-travis-ci/" rel="prev" title="使用 Travis 自动化部署 Hexo Blog">
+                使用 Travis 自动化部署 Hexo Blog <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/avatar.png" alt="Yaming Gong">
+          <p class="site-author-name" itemprop="name">Yaming Gong</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">63</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">102</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/gymgle" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://twitter.com/gymgle" target="_blank" title="Twitter">
+                  
+                    <i class="fa fa-fw fa-twitter"></i>
+                  
+                  Twitter
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/773662567" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  Weibo
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.flickr.com/photos/gymgle/" target="_blank" title="Flickr">
+                  
+                    <i class="fa fa-fw fa-flickr"></i>
+                  
+                  Flickr
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+          <div class="cc-license motion-element" itemprop="license">
+            <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" target="_blank">
+              <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons">
+            </a>
+          </div>
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Windows-Mac-平台"><span class="nav-number">1.</span> <span class="nav-text">Windows / Mac 平台</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Linux-平台"><span class="nav-number">2.</span> <span class="nav-text">Linux 平台</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#全局代理的方式"><span class="nav-number">2.1.</span> <span class="nav-text">全局代理的方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#只准对当前程序代理"><span class="nav-number">2.2.</span> <span class="nav-text">只准对当前程序代理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#类似-VPN-全局的方式"><span class="nav-number">2.3.</span> <span class="nav-text">类似 VPN 全局的方式</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy;  2012 - 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yaming Gong</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+    <script type="text/javascript">
+      var disqus_shortname = 'g2ex';
+      var disqus_identifier = '2018/05/25/go-dep-tips/';
+
+      var disqus_title = "Golang 项目被墙包的获取";
+
+
+      function run_disqus_script(disqus_script) {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      }
+
+      run_disqus_script('count.js');
+
+      
+        var disqus_config = function () {
+            this.page.url = disqus_url;
+            this.page.identifier = disqus_identifier;
+            this.page.title = disqus_title;
+        };
+        run_disqus_script('embed.js');
+      
+
+    </script>
+  
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

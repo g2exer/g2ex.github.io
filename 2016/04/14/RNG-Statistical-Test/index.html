@@ -1,0 +1,754 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="RNG,NIST,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="G2EX" type="application/atom+xml">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0">
+
+
+
+
+
+
+<meta name="description" content="“It’s a good day, isn’t it?”  我们先从天气说起。 天气是不是随机的呢？如果让我们猜明天会不会下雨，我们十有八九能猜对，因为现有的科技可以做到精准预测，因此可以说明天的天气不是随机的。 如果让我们猜100年后的这一天会不会下雨，那就不好猜了，科技还无法做到，但这也不能认为100年后这一天的天气是随机的，因为不排除未来的科技能够预测。 在经典物理中，是不存在真随机的，因">
+<meta name="keywords" content="RNG,NIST">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关于随机数质量测试">
+<meta property="og:url" content="https://g2ex.top/2016/04/14/RNG-Statistical-Test/index.html">
+<meta property="og:site_name" content="G2EX">
+<meta property="og:description" content="“It’s a good day, isn’t it?”  我们先从天气说起。 天气是不是随机的呢？如果让我们猜明天会不会下雨，我们十有八九能猜对，因为现有的科技可以做到精准预测，因此可以说明天的天气不是随机的。 如果让我们猜100年后的这一天会不会下雨，那就不好猜了，科技还无法做到，但这也不能认为100年后这一天的天气是随机的，因为不排除未来的科技能够预测。 在经典物理中，是不存在真随机的，因">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-11-25T02:09:19.688Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="关于随机数质量测试">
+<meta name="twitter:description" content="“It’s a good day, isn’t it?”  我们先从天气说起。 天气是不是随机的呢？如果让我们猜明天会不会下雨，我们十有八九能猜对，因为现有的科技可以做到精准预测，因此可以说明天的天气不是随机的。 如果让我们猜100年后的这一天会不会下雨，那就不好猜了，科技还无法做到，但这也不能认为100年后这一天的天气是随机的，因为不排除未来的科技能够预测。 在经典物理中，是不存在真随机的，因">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://g2ex.top/2016/04/14/RNG-Statistical-Test/">
+
+
+
+
+
+  <title> 关于随机数质量测试 | G2EX </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?0056c67deccbe6617d059b40d352195f";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">G2EX</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="https://g2ex.top/2016/04/14/RNG-Statistical-Test/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="Yaming Gong">
+    <meta itemprop="description" content>
+    <meta itemprop="image" content="/avatar.png">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="G2EX">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="G2EX" src>
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                关于随机数质量测试
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-04-14T18:00:00+00:00">
+                2016-04-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <a href="/2016/04/14/RNG-Statistical-Test/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2016/04/14/RNG-Statistical-Test/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>“It’s a good day, isn’t it?”</p>
+</blockquote>
+<p>我们先从天气说起。</p>
+<p>天气是不是随机的呢？如果让我们猜明天会不会下雨，我们十有八九能猜对，因为现有的科技可以做到精准预测，因此可以说明天的天气不是随机的。</p>
+<p>如果让我们猜100年后的这一天会不会下雨，那就不好猜了，科技还无法做到，但这也不能认为100年后这一天的天气是随机的，因为不排除未来的科技能够预测。</p>
+<p>在经典物理中，是不存在真随机的，因为经典物理量是可以测量和预测的。那在量子力学中呢？因为科技所限，也不能确定量子力学中是否存在真正的真随机。</p>
+<p>也就是说，真正的真随机存在性还不确定。我们通常说的真随机数是指另外一个意思，满足统计意义上的随机，一般是由硬件的随机数产生器生成的。在能够提供随机数的智能卡中，一般会有一个硬件的随机数发生器。在计算机中，操作系统可以根据非确定的设备事件来生成真随机数，比如时钟、IO请求的响应时间、特定硬件中断的时间间隔、键盘敲击速度、鼠标位置变化等等。</p>
+<p>这样一来，我们可以说自己使用的随机数发生器（硬件或软件）是真随机的，那怎么让别人信服呢？因此需要一个判定随机数是否满足真随机条件的标准。比如应用较广的随机序列统计测试方法——NIST（National Institute of Standards and Technology：美国国家标准与技术研究所）Special Publication（800 Series），简称 NSP800。</p>
+<p>NSP800测试程序是一个统计学包，可以到<a href="http://csrc.nist.gov/groups/ST/toolkit/rng/documentation_software.html" title="NIST随机测试套件" target="_blank" rel="noopener">NIST官网下载</a>，该工具包括15种测试手段。这些测试手段可测试由用作保密随机或者伪随机数发生器的硬件和软件产生的任意长的二进制序列的随机性。每个测试项都是针对被测序列的某一特性进行检测的，其中一些测试又可以分解成多种子测验。<br>这15种测试手段及其对应的检测目的如下：</p>
+<ol>
+<li>频率测试：检测整个序列中的0、1是否趋于等概率，如果是，则序列是随机的。</li>
+<li>块内频率测试：检测每个子序列中的0、1是否趋于等概率，如果是，则序列是随机的。</li>
+<li>累积和测试：检测序列的正向、反向累加和以反映0、1在序列中的分布是否均匀，太大或太小都是非随机的。</li>
+<li>游程测试：检测序列中游程（一个没有间断的相同数序列，或者是“1111…”或者“0000…”）的数目是否如真随机序列期望的那样，接近序列长度的一半，如果是，则序列是随机的。</li>
+<li>块内最长游程测试：检测子序列中最大长“1”游程的长度是否与真随机序列中的长度近似一致，如果是，则序列是随机的。</li>
+<li>二元矩阵秩测试：检测序列中固定长度子序列的线性相关性，如果线性相关性较小，则序列是随机的。</li>
+<li>离散傅立叶变换测试：检测序列进行离散傅立叶变换后的频谱是否趋于均匀分布；做法是观察超过95%阈值的峰值数目与低于5%峰值的数目是否有显著不同，如果接近，则序列是随机的。</li>
+<li>非重叠模块匹配测试：检测序列中的子序列是否与太多的非周期模板相匹配，太多就意味着序列是非随机的。</li>
+<li>重叠模块匹配测试：检测序列中重叠模块（特定长度的连续“1”）出现的次数，是否与真随机序列的情况偏离太大，太大则是非随机的。</li>
+<li>通用统计测试：检测序列是否能在信息不丢失的条件下明显压缩，一个不可被明显压缩的序列是随机的。</li>
+<li>近似熵测试：检测序列中相邻长度(m和m+1)的重叠子块的频数，是否与随机情况下预期的频数相近似。</li>
+<li>随机游动测试：统计各个游程中某个特定状态出现的次数，检测其是否远远超过真随机序列中的情况，如果是，则序列是非随机的。</li>
+<li>随机游动状态频数测试：检测序列中，某一特定状态在一个随机游程中出现的次数与真随机序列的偏离程度，如果偏离程度较大，则序列是非随机的。</li>
+<li>序列测试：检测指定长度的所有子序列出现的次数是否趋于等概率，如果是，则序列是随机的。</li>
+<li>线性复杂度测试：检测每个子序列的线性复杂度是否达到可视为是随机序列的程度。</li>
+</ol>
+<p>李璞根据NIST官方网站的说明书编译了中文的《NIST随机数测试》，详细介绍了每种测试手段的数学原理，有兴趣的朋友可以去了解一下。</p>
+<p>NSP800随机数测试套件需要在Linux中使用<code>make</code>编译，生成<code>access</code>可执行文件后使用，测试完成后会在<code>experiments</code>目录中生成测试报告。该套件的使用方法请见本文附件。</p>
+<p>有意思的现象是，由同一个随机数生成器产生的不同批次的随机数测试结果有可能不同。第一组随机数有2项未通过，第二组有可能15项全部通过，这是因为随机数是不可预测的啊！</p>
+<p>因此在实际操作中，同一个随机数生成器会产生三组随机数，只要有两组通过了测试，那就可以判断这个随机数生成器是满足条件的。</p>
+<blockquote>
+<p>附上曾经整理的 NSP800 套件的使用文档<br><a href="https://github.com/gymgle/gnotes/blob/master/attachments/NSP800-Guide.pdf" target="_blank" rel="noopener">https://github.com/gymgle/gnotes/blob/master/attachments/NSP800-Guide.pdf</a> </p>
+</blockquote>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/RNG/" rel="tag"># RNG</a>
+          
+            <a href="/tags/NIST/" rel="tag"># NIST</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/03/17/Github-Pages-HTTPS-Tips/" rel="next" title="Github Pages站点HTTPS使用技巧">
+                <i class="fa fa-chevron-left"></i> Github Pages站点HTTPS使用技巧
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/04/29/Nmap-Notes/" rel="prev" title="《Nmap 渗透测试指南》笔记">
+                《Nmap 渗透测试指南》笔记 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview sidebar-panel sidebar-panel-active">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/avatar.png" alt="Yaming Gong">
+          <p class="site-author-name" itemprop="name">Yaming Gong</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">63</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">102</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/gymgle" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://twitter.com/gymgle" target="_blank" title="Twitter">
+                  
+                    <i class="fa fa-fw fa-twitter"></i>
+                  
+                  Twitter
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/773662567" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  Weibo
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.flickr.com/photos/gymgle/" target="_blank" title="Flickr">
+                  
+                    <i class="fa fa-fw fa-flickr"></i>
+                  
+                  Flickr
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+          <div class="cc-license motion-element" itemprop="license">
+            <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" target="_blank">
+              <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons">
+            </a>
+          </div>
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy;  2012 - 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yaming Gong</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+    <script type="text/javascript">
+      var disqus_shortname = 'g2ex';
+      var disqus_identifier = '2016/04/14/RNG-Statistical-Test/';
+
+      var disqus_title = "关于随机数质量测试";
+
+
+      function run_disqus_script(disqus_script) {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      }
+
+      run_disqus_script('count.js');
+
+      
+        var disqus_config = function () {
+            this.page.url = disqus_url;
+            this.page.identifier = disqus_identifier;
+            this.page.title = disqus_title;
+        };
+        run_disqus_script('embed.js');
+      
+
+    </script>
+  
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

@@ -1,0 +1,790 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="C++,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="G2EX" type="application/atom+xml">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0">
+
+
+
+
+
+
+<meta name="description" content="一、问题的提出编写一个耗时的单线程程序：在Visual C++ 6.0中新建一个基于对话框的MFC项目，这里取名「Demo」。  删掉主对话框IDD_DEMO_DIALOG上的控件，添加一个按钮和文本框。按钮的ID和标题设置为IDD_DEMO_DIALOG和测试，文本框的ID设置为IDC_EDT_OUT。 双击测试按钮为按钮添加响应函数OnBtnTest()，用于计算从1累加到100的和，为了看起">
+<meta name="keywords" content="C++">
+<meta property="og:type" content="article">
+<meta property="og:title" content="VC6多线程编程">
+<meta property="og:url" content="https://g2ex.top/2014/10/09/VC6-Multi-Thread-Program/index.html">
+<meta property="og:site_name" content="G2EX">
+<meta property="og:description" content="一、问题的提出编写一个耗时的单线程程序：在Visual C++ 6.0中新建一个基于对话框的MFC项目，这里取名「Demo」。  删掉主对话框IDD_DEMO_DIALOG上的控件，添加一个按钮和文本框。按钮的ID和标题设置为IDD_DEMO_DIALOG和测试，文本框的ID设置为IDC_EDT_OUT。 双击测试按钮为按钮添加响应函数OnBtnTest()，用于计算从1累加到100的和，为了看起">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/gymgle/imgur/2014-10-09_113112.webp">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/gymgle/imgur/2014-10-09_134227.webp">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/gymgle/imgur/2014-10-09_161910.webp">
+<meta property="og:updated_time" content="2020-11-25T02:09:19.684Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="VC6多线程编程">
+<meta name="twitter:description" content="一、问题的提出编写一个耗时的单线程程序：在Visual C++ 6.0中新建一个基于对话框的MFC项目，这里取名「Demo」。  删掉主对话框IDD_DEMO_DIALOG上的控件，添加一个按钮和文本框。按钮的ID和标题设置为IDD_DEMO_DIALOG和测试，文本框的ID设置为IDC_EDT_OUT。 双击测试按钮为按钮添加响应函数OnBtnTest()，用于计算从1累加到100的和，为了看起">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/gymgle/imgur/2014-10-09_113112.webp">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://g2ex.top/2014/10/09/VC6-Multi-Thread-Program/">
+
+
+
+
+
+  <title> VC6多线程编程 | G2EX </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?0056c67deccbe6617d059b40d352195f";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">G2EX</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="https://g2ex.top/2014/10/09/VC6-Multi-Thread-Program/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="Yaming Gong">
+    <meta itemprop="description" content>
+    <meta itemprop="image" content="/avatar.png">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="G2EX">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="G2EX" src>
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                VC6多线程编程
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2014-10-09T00:00:00+00:00">
+                2014-10-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <a href="/2014/10/09/VC6-Multi-Thread-Program/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2014/10/09/VC6-Multi-Thread-Program/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="一、问题的提出"><a href="#一、问题的提出" class="headerlink" title="一、问题的提出"></a>一、问题的提出</h2><p>编写一个耗时的单线程程序：在Visual C++ 6.0中新建一个基于对话框的MFC项目，这里取名「Demo」。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/gymgle/imgur/2014-10-09_113112.webp" alt="基于对话框的MFC项目" title="创建基于对话框的MFC项目"></p>
+<p>删掉主对话框<code>IDD_DEMO_DIALOG</code>上的控件，添加一个按钮和文本框。按钮的ID和标题设置为<code>IDD_DEMO_DIALOG</code>和<code>测试</code>，文本框的ID设置为<code>IDC_EDT_OUT</code>。</p>
+<p>双击<code>测试按钮</code>为按钮添加响应函数<code>OnBtnTest()</code>，用于计算从1累加到100的和，为了看起来耗时，在每次循环中加入0.1秒的延时。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">CDemoDlg::OnBtnTest</span><span class="params">()</span> </span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	GetDlgItem(IDC_EDT_OUT)-&gt;SetWindowText(<span class="string">"计算开始..."</span>);</span><br><span class="line">	<span class="keyword">int</span> sum = <span class="number">0</span>;</span><br><span class="line">	CString str;</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= <span class="number">100</span>; ++i)</span><br><span class="line">	&#123;</span><br><span class="line">		sum += i;</span><br><span class="line">		Sleep(<span class="number">100</span>);	<span class="comment">// 延时0.1秒</span></span><br><span class="line">	&#125;</span><br><span class="line">	str.Format(<span class="string">"计算结果: %d"</span>, sum);</span><br><span class="line">	GetDlgItem(IDC_EDT_OUT)-&gt;SetWindowText(str);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>编译并运行应用程序，单击<code>测试</code>按钮，会发现在这10秒多期间内程序卡死了，不再响应其它消息。为了更好地处理这种耗时的操作，我们有必要使用多线程编程。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/gymgle/imgur/2014-10-09_134227.webp" alt="程序卡死" title="程序卡死"></p>
+<h2 id="二、如何使用多线程"><a href="#二、如何使用多线程" class="headerlink" title="二、如何使用多线程"></a>二、如何使用多线程</h2><p>下面在MFC中使用多线程完成1到100的累加计算。程序运行时，会自动创建一个Demo主线程，点击测试按钮后主线程启动一个计算线程执行<code>ThreadFunc()</code>函数，计算线程计算完成后发送<code>WM_USER_THREAD_FINISHED</code>消息，最后，主线程使用<code>OnThreadFinished()</code>函数处理<code>WM_USER_THREAD_FINISHED</code>消息并把结果显示在文本框中。</p>
+<p>实现步骤如下：</p>
+<h3 id="1-定义参数传递结构体"><a href="#1-定义参数传递结构体" class="headerlink" title="1) 定义参数传递结构体"></a>1) 定义参数传递结构体</h3><p>在<code>DemoDlg.h</code>文件中<code>CDemoDlg</code>类的外部定义两个结构体，第一个用于主线程创建计算线程时向计算线程传递参数：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">tagTHREADPARMS</span> &#123;</span></span><br><span class="line">	<span class="keyword">int</span> BeginNumb;	<span class="comment">// 起始数字</span></span><br><span class="line">	<span class="keyword">int</span> EndNumb;	<span class="comment">// 结束数字</span></span><br><span class="line">	HWND hWnd;</span><br><span class="line">&#125; THREADPARMS;</span><br></pre></td></tr></table></figure>
+
+<p>当计算线程计算完成后向主线程发送消息时，使用下面的结构体：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">tagRESULTPARMS</span> &#123;</span></span><br><span class="line">	<span class="keyword">int</span> Sum;	<span class="comment">// 计算结果</span></span><br><span class="line">	HWND hWnd;</span><br><span class="line">&#125; RESULTPARMS;</span><br></pre></td></tr></table></figure>
+
+<p>如果线程间不需要参数传递或者传递的参数很少，可以不使用结构体。</p>
+<h3 id="2-声明线程函数"><a href="#2-声明线程函数" class="headerlink" title="2) 声明线程函数"></a>2) 声明线程函数</h3><p>在<code>DemoDlg.h</code>文件中<code>CDemoDlg</code>类的外部添加线程函数声明：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">UINT <span class="title">ThreadFunc</span><span class="params">(LPVOID lpParam)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-编写线程函数"><a href="#3-编写线程函数" class="headerlink" title="3) 编写线程函数"></a>3) 编写线程函数</h3><p>在<code>DemoDlg.cpp</code>文件中编写计算线程函数。其计算结果是一个整形数字，完全可以用返回值的形式返回。为了应对更复杂的参数传递，这里演示用结构体传递参数，把结果以消息的形式发送给消息处理函数（消息处理函数后续添加）。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">UINT <span class="title">ThreadFunc</span><span class="params">(LPVOID lpParam)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="comment">// 获取传递过来的参数</span></span><br><span class="line">	THREADPARMS* ptp = (THREADPARMS*) lpParam;</span><br><span class="line">	HWND hWnd = ptp-&gt;hWnd;</span><br><span class="line">	<span class="keyword">int</span> m = ptp-&gt;BeginNumb;</span><br><span class="line">	<span class="keyword">int</span> n = ptp-&gt;EndNumb;</span><br><span class="line">	<span class="keyword">int</span> sum = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 构造发送消息的参数</span></span><br><span class="line">	RESULTPARMS* prp = <span class="keyword">new</span> RESULTPARMS;</span><br><span class="line">	prp-&gt;hWnd = hWnd;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = m; i &lt;= n; ++i)</span><br><span class="line">	&#123;</span><br><span class="line">		sum += i;</span><br><span class="line">		Sleep(<span class="number">100</span>);	<span class="comment">// 延时0.1秒</span></span><br><span class="line">	&#125;</span><br><span class="line">	prp-&gt;Sum = sum;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 发送 WM_USER_THREAD_FINISHED 消息</span></span><br><span class="line">	::PostMessage (hWnd, WM_USER_THREAD_FINISHED, (WPARAM) prp, <span class="number">0</span>);</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-创建线程函数"><a href="#4-创建线程函数" class="headerlink" title="4) 创建线程函数"></a>4) 创建线程函数</h3><p>在按钮事件<code>OnBtnTest()</code>中使用<code>AfxBeginThread()</code>创建线程：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">CDemoDlg::OnBtnTest</span><span class="params">()</span> </span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="comment">// 构造启动线程的参数</span></span><br><span class="line">	THREADPARMS* ptp = <span class="keyword">new</span> THREADPARMS;</span><br><span class="line">	ptp-&gt;hWnd = m_hWnd;</span><br><span class="line">	ptp-&gt;BeginNumb = <span class="number">1</span>;</span><br><span class="line">	ptp-&gt;EndNumb = <span class="number">100</span>;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 启动计算线程</span></span><br><span class="line">	AfxBeginThread (ThreadFunc, ptp);</span><br><span class="line"></span><br><span class="line">	GetDlgItem(IDC_EDT_OUT)-&gt;SetWindowText(<span class="string">"计算开始..."</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-消息处理函数"><a href="#5-消息处理函数" class="headerlink" title="5) 消息处理函数"></a>5) 消息处理函数</h3><p>计算线程发送结果的<code>WM_USER_THREAD_FINISHED</code>消息怎么来处理呢？</p>
+<p>首先，在<code>DemoDlg.h</code>文件中定义<code>WM_USER_THREAD_FINISHED</code>消息：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> WM_USER_THREAD_FINISHED WM_USER+0x100</span></span><br></pre></td></tr></table></figure>
+
+<p>然后，在<code>DemoDlg.h</code>文件<code>CDemoDlg</code>类的<code>protected</code>中添加消息函数的声明，把声明放到<code>DECLARE_MESSAGE_MAP()</code>行的上面。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">afx_msg LONG <span class="title">OnThreadFinished</span><span class="params">(WPARAM wParam, LPARAM lParam)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p>这时就可以把<code>WM_USER_THREAD_FINISHED</code>和<code>OnThreadFinished()</code>对应起来了：在<code>DemoDlg.cpp</code>中，找到<code>BEGIN_MESSAGE_MAP(CDemoDlg, CDialog)</code>，在<code>END_MESSAGE_MAP()</code>结束之前加入消息映射：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ON_MESSAGE (WM_USER_THREAD_FINISHED, OnThreadFinished)</span><br></pre></td></tr></table></figure>
+
+<p>最后，在<code>DemoDlg.cpp</code>文件中编写<code>OnThreadFinished()</code>函数：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">CDemoDlg::OnBtnTest</span><span class="params">()</span> </span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="comment">// 构造启动线程的参数</span></span><br><span class="line">	THREADPARMS* ptp = <span class="keyword">new</span> THREADPARMS;</span><br><span class="line">	ptp-&gt;hWnd = m_hWnd;</span><br><span class="line">	ptp-&gt;BeginNumb = <span class="number">1</span>;</span><br><span class="line">	ptp-&gt;EndNumb = <span class="number">100</span>;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 启动计算线程</span></span><br><span class="line">	AfxBeginThread (ThreadFunc, ptp);</span><br><span class="line"></span><br><span class="line">	GetDlgItem(IDC_EDT_OUT)-&gt;SetWindowText(<span class="string">"测试开始"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="6-多线程运行结果"><a href="#6-多线程运行结果" class="headerlink" title="6) 多线程运行结果"></a>6) 多线程运行结果</h3><p>编译运行，对话框可以随意拖动不再卡了，使用<code>Process Hacker</code>查看<code>Demo.exe</code>进程，可以发现当点击<code>测试按钮</code>时，它会创建一条新线程。试着多点几次测试，会发生什么？</p>
+<p><img src="https://cdn.jsdelivr.net/gh/gymgle/imgur/2014-10-09_161910.webp" alt="多线程运行" title="多线程运行效果"></p>
+<h2 id="三、参考内容"><a href="#三、参考内容" class="headerlink" title="三、参考内容"></a>三、参考内容</h2><p>关于多线程详细的内容，请参考 <a href="http://www.cnblogs.com/TenosDoIt/archive/2013/04/15/3022092.html" target="_blank" rel="noopener">http://www.cnblogs.com/TenosDoIt/archive/2013/04/15/3022092.html</a> 或者善用搜索引擎。</p>
+<h2 id="四、源码下载"><a href="#四、源码下载" class="headerlink" title="四、源码下载"></a>四、源码下载</h2><p>Demo源码百度网盘下载: <a href="http://pan.baidu.com/s/1qW5kwsk" target="_blank" rel="noopener">http://pan.baidu.com/s/1qW5kwsk</a> 密码: 3u5i</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/C/" rel="tag"># C++</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2014/09/01/Get-VPN-Gate-L2TP-IPsec-IP/" rel="next" title="VPN Gate免费L2TP/IPsec代理">
+                <i class="fa fa-chevron-left"></i> VPN Gate免费L2TP/IPsec代理
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2014/10/12/VMware-Workstation-10-Install-Mac-OS-X-Mountain-Lion-10.8.5/" rel="prev" title="VMware Workstation 10安装Mac OS X Mountain Lion 10.8.5">
+                VMware Workstation 10安装Mac OS X Mountain Lion 10.8.5 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/avatar.png" alt="Yaming Gong">
+          <p class="site-author-name" itemprop="name">Yaming Gong</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">63</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">102</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/gymgle" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://twitter.com/gymgle" target="_blank" title="Twitter">
+                  
+                    <i class="fa fa-fw fa-twitter"></i>
+                  
+                  Twitter
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/773662567" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  Weibo
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.flickr.com/photos/gymgle/" target="_blank" title="Flickr">
+                  
+                    <i class="fa fa-fw fa-flickr"></i>
+                  
+                  Flickr
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+          <div class="cc-license motion-element" itemprop="license">
+            <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" target="_blank">
+              <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons">
+            </a>
+          </div>
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、问题的提出"><span class="nav-number">1.</span> <span class="nav-text">一、问题的提出</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、如何使用多线程"><span class="nav-number">2.</span> <span class="nav-text">二、如何使用多线程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-定义参数传递结构体"><span class="nav-number">2.1.</span> <span class="nav-text">1) 定义参数传递结构体</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-声明线程函数"><span class="nav-number">2.2.</span> <span class="nav-text">2) 声明线程函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-编写线程函数"><span class="nav-number">2.3.</span> <span class="nav-text">3) 编写线程函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-创建线程函数"><span class="nav-number">2.4.</span> <span class="nav-text">4) 创建线程函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-消息处理函数"><span class="nav-number">2.5.</span> <span class="nav-text">5) 消息处理函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-多线程运行结果"><span class="nav-number">2.6.</span> <span class="nav-text">6) 多线程运行结果</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、参考内容"><span class="nav-number">3.</span> <span class="nav-text">三、参考内容</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#四、源码下载"><span class="nav-number">4.</span> <span class="nav-text">四、源码下载</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy;  2012 - 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yaming Gong</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+    <script type="text/javascript">
+      var disqus_shortname = 'g2ex';
+      var disqus_identifier = '2014/10/09/VC6-Multi-Thread-Program/';
+
+      var disqus_title = "VC6多线程编程";
+
+
+      function run_disqus_script(disqus_script) {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      }
+
+      run_disqus_script('count.js');
+
+      
+        var disqus_config = function () {
+            this.page.url = disqus_url;
+            this.page.identifier = disqus_identifier;
+            this.page.title = disqus_title;
+        };
+        run_disqus_script('embed.js');
+      
+
+    </script>
+  
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

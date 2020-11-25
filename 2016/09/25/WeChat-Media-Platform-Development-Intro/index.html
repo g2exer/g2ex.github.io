@@ -1,0 +1,882 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="Python,Django,WeChat,Media Platform,Official Accounts,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="G2EX" type="application/atom+xml">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0">
+
+
+
+
+
+
+<meta name="description" content="简介本文总结了使用 Django 开发微信公众号的后台接入过程的步骤和经验，主要包括：  Django 的安装、配置和应用开发，开发和测试环境为 Ubuntu 14.04 LTS； 公众号后台接入过程，并通过微信公众平台的验证； 开发过程中遇到的坑和解决方法。  在后续文章中，会总结基于 wechat-python-sdk 开发微信公众平台的经验。 安装 Django选择 Python 版本根据">
+<meta name="keywords" content="Python,Django,WeChat,Media Platform,Official Accounts">
+<meta property="og:type" content="article">
+<meta property="og:title" content="微信公众平台开发（一）">
+<meta property="og:url" content="https://g2ex.top/2016/09/25/WeChat-Media-Platform-Development-Intro/index.html">
+<meta property="og:site_name" content="G2EX">
+<meta property="og:description" content="简介本文总结了使用 Django 开发微信公众号的后台接入过程的步骤和经验，主要包括：  Django 的安装、配置和应用开发，开发和测试环境为 Ubuntu 14.04 LTS； 公众号后台接入过程，并通过微信公众平台的验证； 开发过程中遇到的坑和解决方法。  在后续文章中，会总结基于 wechat-python-sdk 开发微信公众平台的经验。 安装 Django选择 Python 版本根据">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/gymgle/imgur/2016-09-25_195933.webp">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/gymgle/imgur/2016-09-25_213826.webp">
+<meta property="og:updated_time" content="2020-11-25T02:09:19.688Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="微信公众平台开发（一）">
+<meta name="twitter:description" content="简介本文总结了使用 Django 开发微信公众号的后台接入过程的步骤和经验，主要包括：  Django 的安装、配置和应用开发，开发和测试环境为 Ubuntu 14.04 LTS； 公众号后台接入过程，并通过微信公众平台的验证； 开发过程中遇到的坑和解决方法。  在后续文章中，会总结基于 wechat-python-sdk 开发微信公众平台的经验。 安装 Django选择 Python 版本根据">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/gymgle/imgur/2016-09-25_195933.webp">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://g2ex.top/2016/09/25/WeChat-Media-Platform-Development-Intro/">
+
+
+
+
+
+  <title> 微信公众平台开发（一） | G2EX </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?0056c67deccbe6617d059b40d352195f";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">G2EX</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="https://g2ex.top/2016/09/25/WeChat-Media-Platform-Development-Intro/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="Yaming Gong">
+    <meta itemprop="description" content>
+    <meta itemprop="image" content="/avatar.png">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="G2EX">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="G2EX" src>
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                微信公众平台开发（一）
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-09-25T22:45:00+00:00">
+                2016-09-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <a href="/2016/09/25/WeChat-Media-Platform-Development-Intro/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2016/09/25/WeChat-Media-Platform-Development-Intro/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>本文总结了使用 <code>Django</code> 开发微信公众号的<strong>后台接入过程</strong>的步骤和经验，主要包括：</p>
+<ol>
+<li>Django 的安装、配置和应用开发，开发和测试环境为 <code>Ubuntu 14.04 LTS</code>；</li>
+<li>公众号后台接入过程，并通过微信公众平台的验证；</li>
+<li>开发过程中遇到的坑和解决方法。</li>
+</ol>
+<p>在后续文章中，会总结基于 <a href="http://wechat-python-sdk.com/" title="wechat-python-sdk" target="_blank" rel="noopener"><code>wechat-python-sdk</code></a> 开发微信公众平台的经验。</p>
+<h2 id="安装-Django"><a href="#安装-Django" class="headerlink" title="安装 Django"></a>安装 Django</h2><h3 id="选择-Python-版本"><a href="#选择-Python-版本" class="headerlink" title="选择 Python 版本"></a>选择 Python 版本</h3><p>根据 Django 版本选择 Python。请注意，代码随 Django 版本不同可能有所变化，如果你想正确运行本文的代码，请确认使用 Django <code>1.10.1</code> 版本。这里使用了 Ubuntu 默认的 Python <code>2.7</code> 版本。</p>
+<table>
+<thead>
+<tr>
+<th>Django version</th>
+<th>Python versions</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1.8</td>
+<td>2.7, 3.2 (until the end of 2016), 3.3, 3.4, 3.5</td>
+</tr>
+<tr>
+<td>1.9, 1.10</td>
+<td>2.7, 3.4, 3.5</td>
+</tr>
+<tr>
+<td>1.11</td>
+<td>2.7, 3.4, 3.5, 3.6</td>
+</tr>
+<tr>
+<td>2.0</td>
+<td>3.5+</td>
+</tr>
+</tbody></table>
+<h3 id="安装-pip"><a href="#安装-pip" class="headerlink" title="安装 pip"></a>安装 pip</h3><p>这里使用 pip 安装 Django，pip 已经默认安装在了 Python 2 &gt;= 2.7.9 或 Python 3 &gt;= 3.4 中。如果需要安装 pip，可以使用 Ubuntu 包管理器：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt-get install python-pip python-dev</span><br></pre></td></tr></table></figure>
+
+<h3 id="安装-virtualenv"><a href="#安装-virtualenv" class="headerlink" title="安装 virtualenv"></a>安装 virtualenv</h3><p>virtualenv 使得不同版本的 Python 开发更加方便，如果你不需要 virtualenv，可以跳过该步骤。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo pip install virtualenv</span><br></pre></td></tr></table></figure>
+
+<h3 id="安装-Django-1"><a href="#安装-Django-1" class="headerlink" title="安装 Django"></a>安装 Django</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ mkdir Workspace &amp;&amp; cd Workspace <span class="comment"># 创建并进入工作目录，可省略</span></span><br><span class="line">$ virtualenv venv                 <span class="comment"># 创建 python 虚拟环境，这里使用默认 Python 版本，也可以使用 -p 参数指定 Python 版本。未使用 virtualenv 请省略此步骤</span></span><br><span class="line">$ source ./venv/bin/activate      <span class="comment"># 激活 virtualenv。未使用 Virtualenv 请省略此步骤</span></span><br><span class="line">$ pip install Django</span><br></pre></td></tr></table></figure>
+
+<p><strong>PS:</strong> Django 的其他安装方法请参考官方文档：<a href="https://docs.djangoproject.com/en/1.10/intro/install/" target="_blank" rel="noopener">https://docs.djangoproject.com/en/1.10/intro/install/</a></p>
+<h2 id="创建-Django-项目"><a href="#创建-Django-项目" class="headerlink" title="创建 Django 项目"></a>创建 Django 项目</h2><p>创建一个名为 <code>mysite</code> 的 Django 项目：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ django-admin startproject mysite</span><br></pre></td></tr></table></figure>
+
+<p>测试一下 Django 项目是否能够正常运行：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ cd mysite</span><br><span class="line">$ python manage.py runserver</span><br></pre></td></tr></table></figure>
+
+<p>正常情况下，会在终端中输出以下内容，打开浏览器访问 <code>http://127.0.0.1:8000/</code> 可以看到 <code>It worked!</code> 运行结果。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">September <span class="number">25</span>, <span class="number">2016</span> - <span class="number">21</span>:<span class="number">09</span>:<span class="number">58</span></span><br><span class="line">Django version <span class="number">1.10</span><span class="number">.1</span>, using settings <span class="string">'mysite.settings'</span></span><br><span class="line">Starting development server at http://<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>:<span class="number">8000</span>/</span><br><span class="line">Quit the server <span class="keyword">with</span> CONTROL-C.</span><br></pre></td></tr></table></figure>
+
+<p>接下来，按 <code>CONTROL-C</code> 停止 Django 服务，创建 <code>wechat</code> app：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ python manage.py startapp wechat</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>项目 ( Projects ) vs. 应用 ( apps )</strong><br>项目与应用之间有什么不同之处？应用是一个提供功能的 Web 应用 – 例如：一个博客系统、一个公共记录的数据库或者一个简单的投票系统。 项目是针对一个特定的 Web  网站相关的配置和其应用的组合。一个项目可以包含多个应用。一个应用可以在多个项目中使用。</p>
+</blockquote>
+<h2 id="配置微信公众号开发者模式"><a href="#配置微信公众号开发者模式" class="headerlink" title="配置微信公众号开发者模式"></a>配置微信公众号开发者模式</h2><p>主要注意两点：</p>
+<ol>
+<li>进入微信公众平台，填写服务器配置，在 URL 中填入你的服务器 IP 地址或者域名，这里在 IP 地址后加上 <code>wechat/</code>，在 Django 的应用中去解析 <code>wechat/</code>。注意不要忘记 URL 最后的反斜杠 <code>/</code>，否则 Django 不能正确解析微信的验证信息。</li>
+<li>定义你自己的 <code>Token</code>。</li>
+</ol>
+<p><img src="https://cdn.jsdelivr.net/gh/gymgle/imgur/2016-09-25_195933.webp" alt="微信公众号服务器配置" title="微信公众号服务器配置"></p>
+<p>此时点击「提交」按钮，是无法通过验证的，因为我们还没编写 <code>wechat</code> 应用。</p>
+<h2 id="编写-Django-应用"><a href="#编写-Django-应用" class="headerlink" title="编写 Django 应用"></a>编写 Django 应用</h2><p>在这一节，修改已经创建的 <code>wechat</code> 应用，接入微信公众平台，并通过微信公众平台的验证。验证是指验证消息的确来自微信服务器。提取验证消息中的 <code>signature</code>、<code>timestamp</code>、<code>nonce</code> 和 <code>echostr</code>，计算对比 <code>signature</code> 字段是否正确。详细过程请参考公众平台官方文档：<a href="https://mp.weixin.qq.com/wiki?t=resource/res_main&amp;id=mp1421135319" target="_blank" rel="noopener">https://mp.weixin.qq.com/wiki?t=resource/res_main&amp;id=mp1421135319</a></p>
+<p>现在，<code>mysite</code> 项目的目录应该是这样的：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">mysite</span><br><span class="line">├── manage.py</span><br><span class="line">├── mysite</span><br><span class="line">│   ├── __init__.py</span><br><span class="line">│   ├── settings.py</span><br><span class="line">│   ├── urls.py</span><br><span class="line">│   └── wsgi.py</span><br><span class="line">└── wechat</span><br><span class="line">    ├── admin.py</span><br><span class="line">    ├── apps.py</span><br><span class="line">    ├── __init__.py</span><br><span class="line">    ├── models.py</span><br><span class="line">    ├── tests.py</span><br><span class="line">    └── views.py</span><br></pre></td></tr></table></figure>
+
+<p>接入微信公众平台主要涉及三个文件：<code>mysite/urls.py</code>、<code>wechat/urls.py</code> 和 <code>wechat/views.py</code>：</p>
+<ul>
+<li><code>mysite/urls.py</code> 负责解析公众平台 URL 请求中的 <code>wechat/</code>，指向 <code>wechat</code> 应用中定义的 <code>urls</code>；</li>
+<li><code>wechat/urls.py</code> 负责解析 Django 提取的 <code>wechat/</code> 后的 URL，需要自己手动创建；</li>
+<li><code>wechat/views.py</code> 负责实现对公众平台消息的验证；</li>
+</ul>
+<h3 id="创建-wechat-urls-py"><a href="#创建-wechat-urls-py" class="headerlink" title="创建 wechat/urls.py"></a>创建 <strong>wechat/urls.py</strong></h3><p>在 <code>wechat</code> 目录中创建 <code>urls.py</code>，添加以下内容：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">from django.conf.urls import url, include</span><br><span class="line">from . import views</span><br><span class="line"></span><br><span class="line">urlpatterns = [</span><br><span class="line">    url(r&apos;^$&apos;, views.WeChat),</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+<p>你也许已经注意到了首字母大写的 <code>WeChat</code>，这是接下来我们要在 <code>wechat/views.py</code> 中编写的公众平台验证方法。</p>
+<h3 id="修改-mysite-urls-py"><a href="#修改-mysite-urls-py" class="headerlink" title="修改 mysite/urls.py"></a>修改 <strong>mysite/urls.py</strong></h3><p>为 <code>mysite/urls.py</code> 添加 <code>wechat/</code> 的解析，修改后的 <code>mysite/urls.py</code> 为：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> django.conf.urls <span class="keyword">import</span> url</span><br><span class="line"><span class="keyword">from</span> django.contrib <span class="keyword">import</span> admin</span><br><span class="line"><span class="keyword">from</span> django.conf.urls <span class="keyword">import</span> include</span><br><span class="line"></span><br><span class="line">urlpatterns = [</span><br><span class="line">    url(<span class="string">r'^admin/'</span>, admin.site.urls),</span><br><span class="line">    url(<span class="string">r'^wechat/'</span>, include(<span class="string">'wechat.urls'</span>)),</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+<h3 id="修改-wechat-views-py"><a href="#修改-wechat-views-py" class="headerlink" title="修改 wechat/views.py"></a>修改 <strong>wechat/views.py</strong></h3><p>添加 <code>WeChat()</code> 方法，用于完成对公众平台消息的验证，修改后的 <code>wechat/views.py</code> 内容为：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> django.shortcuts <span class="keyword">import</span> render</span><br><span class="line"><span class="keyword">from</span> django.http <span class="keyword">import</span> HttpResponse</span><br><span class="line"><span class="keyword">from</span> django.views.decorators.csrf <span class="keyword">import</span> csrf_exempt</span><br><span class="line"><span class="keyword">import</span> hashlib</span><br><span class="line"></span><br><span class="line"><span class="meta">@csrf_exempt</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">WeChat</span><span class="params">(request)</span>:</span></span><br><span class="line">    token = <span class="string">'xxx'</span>    <span class="comment"># 填入你的 Token</span></span><br><span class="line"></span><br><span class="line">    signature = request.GET.get(<span class="string">'signature'</span>, <span class="string">''</span>)</span><br><span class="line">    timestamp = request.GET.get(<span class="string">'timestamp'</span>, <span class="string">''</span>)</span><br><span class="line">    nonce = request.GET.get(<span class="string">'nonce'</span>, <span class="string">''</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 计算排序后的哈希值并比较</span></span><br><span class="line">    tmp_sig = hashlib.sha1(<span class="string">''</span>.join(sorted([token, timestamp, nonce]))).hexdigest()</span><br><span class="line">    <span class="keyword">if</span> tmp_sig == signature:</span><br><span class="line">        <span class="keyword">return</span> HttpResponse(request.GET.get(<span class="string">'echostr'</span>, <span class="string">''</span>))</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> HttpResponse(<span class="string">'error'</span>)</span><br></pre></td></tr></table></figure>
+
+<h3 id="运行-Django-应用"><a href="#运行-Django-应用" class="headerlink" title="运行 Django 应用"></a>运行 Django 应用</h3><p>至此，<code>wechat</code> 应用编写完成。下面，我们需要验证一下应用是否能够正确运行。</p>
+<p>启动 Django：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ python manage.py runserver <span class="number">0.0</span><span class="number">.0</span><span class="number">.0</span>:<span class="number">80</span></span><br></pre></td></tr></table></figure>
+
+<p>如果出现了以下提示，则说明运行成功了。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Django version 1.10.1, using settings &apos;mysite.settings&apos;</span><br><span class="line">Starting development server at http://0.0.0.0:80/</span><br><span class="line">Quit the server with CONTROL-C.</span><br></pre></td></tr></table></figure>
+
+<p>在提示信息中，也许还包括以下提示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">You have 13 unapplied migration(s). Your project may not work properly until you apply the migrations for app(s): admin, auth, contenttypes, sessions.</span><br><span class="line">Run &apos;python manage.py migrate&apos; to apply them.</span><br></pre></td></tr></table></figure>
+
+<p>按照要求运行一下 <code>python manage.py migrate</code> 即可。</p>
+<p>在微信公众平台服务器配置中点击「提交」按钮提交配置信息，显示「提交成功」的消息后说明已经正确接入微信公众平台了。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/gymgle/imgur/2016-09-25_213826.webp" alt="成功接入微信公众平台" title="成功接入微信公众平台"></p>
+<h2 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h2><ol>
+<li>如果正式部署 Django，建议配合 <code>Nginx</code> 或 <code>Apache</code> 作为前端代理；</li>
+<li>Django 默认开启了调试模式，正式部署项目时为了安全务必<strong>关闭调试</strong>，具体方法是把 <code>mysite、settings.py</code> 中的 <code>DEBUG = True</code> 改为 <code>DEBUG = False</code>；</li>
+</ol>
+<h2 id="项目源码"><a href="#项目源码" class="headerlink" title="项目源码"></a>项目源码</h2><p>源码已托管至 Github <a href="https://github.com/gymgle/Gnotes/tree/master/WeChat/wechat-mp-check-signature-demo/mysite" target="_blank" rel="noopener">https://github.com/gymgle/Gnotes/tree/master/WeChat/wechat-mp-check-signature-demo/mysite</a></p>
+<h2 id="踩过的坑"><a href="#踩过的坑" class="headerlink" title="踩过的坑"></a>踩过的坑</h2><ol>
+<li><p><strong><code>from django.conf.urls.defaults import * ImportError: No module named defaults</code></strong><br>因为 <code>django.conf.urls.default</code> 在 Django 1.6 中被移除，建议改为 <code>from django.conf.urls import patterns, url, include</code>，而在 Django 1.9 中，<code>django.conf.urls.patterns()</code> 也被移除了，不需要再导入 patterns，只在 <code>urls.py</code> 中 <code>from django.conf.urls import url, include</code>：</p>
+ <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">urlpatterns = [</span><br><span class="line">   url(...),</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong><code>AttributeError: &#39;WSGIRequest&#39; object has no attribute &#39;REQUEST&#39;</code></strong><br><code>request.REQUEST.get(&#39;signature&#39;, &#39;&#39;)</code> 的用法已经过时，改为 <code>request.GET.get(&quot;page&quot;)</code> 或 <code>request.POST.get(&quot;page&quot;)</code></p>
+</li>
+<li><p><strong><code>CommandError: You must set settings.ALLOWED_HOSTS if DEBUG is False.</code></strong><br>修改 <code>settings.py</code>，把 <code>ALLOWED_HOSTS = []</code> 改为：<code>ALLOWED_HOSTS = [&#39;*&#39;]</code></p>
+</li>
+<li><p><strong>微信公众平台配置正常，但自己的服务器一直收不到用户信息</strong><br>在微信公众号配置页面，注意 URL 最后带上 <code>/</code>：<code>http://xxx/wechat/</code><br>因为 Django 会解析的形式是 <code>wechat/?x=xx&amp;x=xx&amp;...</code></p>
+</li>
+<li><p><strong>Unknown command: ‘syncdb’</strong><br>因为在Django 1.9 及以后的版本中使用 <code>migrate</code> 代替了 <code>syscdb</code>。</p>
+</li>
+<li><p><strong>怎么设置 Django 1.10 的时区和语言</strong><br>修改 <code>settings.py</code>：</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">LANGUAGE_CODE = &apos;zh-Hans&apos;</span><br><span class="line">TIME_ZONE = &apos;Asia/Shanghai&apos;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Django 1.10 INSTALLED_APPS 的设置问题</strong><br>在 <code>settings.py</code> 中：</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">INSTALLED_APPS = [</span><br><span class="line">    ...</span><br><span class="line">    &apos;wechat.apps.WechatConfig&apos;, # 不再是直接写 wechat，否则导入 models 时会出错</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h2 id="参考内容"><a href="#参考内容" class="headerlink" title="参考内容"></a>参考内容</h2><ul>
+<li>Django 官方文档 <a href="https://www.djangoproject.com/start/" target="_blank" rel="noopener">https://www.djangoproject.com/start/</a></li>
+<li>Django 1.8.2 文档 <a href="http://python.usyiyi.cn/django_182/index.html" target="_blank" rel="noopener">http://python.usyiyi.cn/django_182/index.html</a></li>
+<li>pip 安装文档 <a href="https://pip.pypa.io/en/stable/installing/" target="_blank" rel="noopener">https://pip.pypa.io/en/stable/installing/</a></li>
+<li>Virtualenv 安装文档 <a href="https://virtualenv.pypa.io/en/stable/installation/" target="_blank" rel="noopener">https://virtualenv.pypa.io/en/stable/installation/</a></li>
+<li>微信公众平台官方文档 <a href="https://mp.weixin.qq.com/wiki?t=resource/res_main&amp;id=mp1421135319" target="_blank" rel="noopener">https://mp.weixin.qq.com/wiki?t=resource/res_main&amp;id=mp1421135319</a></li>
+</ul>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Python/" rel="tag"># Python</a>
+          
+            <a href="/tags/Django/" rel="tag"># Django</a>
+          
+            <a href="/tags/WeChat/" rel="tag"># WeChat</a>
+          
+            <a href="/tags/Media-Platform/" rel="tag"># Media Platform</a>
+          
+            <a href="/tags/Official-Accounts/" rel="tag"># Official Accounts</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/09/09/My-Views-on-Blockchain-Scenarios/" rel="next" title="关于区块链应用场景的思考">
+                <i class="fa fa-chevron-left"></i> 关于区块链应用场景的思考
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/09/28/WeChat-Media-Platform-Development-with-SDK/" rel="prev" title="微信公众平台开发（二）">
+                微信公众平台开发（二） <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/avatar.png" alt="Yaming Gong">
+          <p class="site-author-name" itemprop="name">Yaming Gong</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">63</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">102</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/gymgle" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://twitter.com/gymgle" target="_blank" title="Twitter">
+                  
+                    <i class="fa fa-fw fa-twitter"></i>
+                  
+                  Twitter
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/773662567" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  Weibo
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.flickr.com/photos/gymgle/" target="_blank" title="Flickr">
+                  
+                    <i class="fa fa-fw fa-flickr"></i>
+                  
+                  Flickr
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+          <div class="cc-license motion-element" itemprop="license">
+            <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" target="_blank">
+              <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons">
+            </a>
+          </div>
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简介"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装-Django"><span class="nav-number">2.</span> <span class="nav-text">安装 Django</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#选择-Python-版本"><span class="nav-number">2.1.</span> <span class="nav-text">选择 Python 版本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装-pip"><span class="nav-number">2.2.</span> <span class="nav-text">安装 pip</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装-virtualenv"><span class="nav-number">2.3.</span> <span class="nav-text">安装 virtualenv</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装-Django-1"><span class="nav-number">2.4.</span> <span class="nav-text">安装 Django</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#创建-Django-项目"><span class="nav-number">3.</span> <span class="nav-text">创建 Django 项目</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置微信公众号开发者模式"><span class="nav-number">4.</span> <span class="nav-text">配置微信公众号开发者模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#编写-Django-应用"><span class="nav-number">5.</span> <span class="nav-text">编写 Django 应用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#创建-wechat-urls-py"><span class="nav-number">5.1.</span> <span class="nav-text">创建 wechat/urls.py</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#修改-mysite-urls-py"><span class="nav-number">5.2.</span> <span class="nav-text">修改 mysite/urls.py</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#修改-wechat-views-py"><span class="nav-number">5.3.</span> <span class="nav-text">修改 wechat/views.py</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#运行-Django-应用"><span class="nav-number">5.4.</span> <span class="nav-text">运行 Django 应用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#注意事项"><span class="nav-number">6.</span> <span class="nav-text">注意事项</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#项目源码"><span class="nav-number">7.</span> <span class="nav-text">项目源码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#踩过的坑"><span class="nav-number">8.</span> <span class="nav-text">踩过的坑</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考内容"><span class="nav-number">9.</span> <span class="nav-text">参考内容</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy;  2012 - 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yaming Gong</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+    <script type="text/javascript">
+      var disqus_shortname = 'g2ex';
+      var disqus_identifier = '2016/09/25/WeChat-Media-Platform-Development-Intro/';
+
+      var disqus_title = "微信公众平台开发（一）";
+
+
+      function run_disqus_script(disqus_script) {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      }
+
+      run_disqus_script('count.js');
+
+      
+        var disqus_config = function () {
+            this.page.url = disqus_url;
+            this.page.identifier = disqus_identifier;
+            this.page.title = disqus_title;
+        };
+        run_disqus_script('embed.js');
+      
+
+    </script>
+  
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

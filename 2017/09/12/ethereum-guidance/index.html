@@ -1,0 +1,965 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="Blockchain,以太坊,Ethereum,Solidity,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="G2EX" type="application/atom+xml">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0">
+
+
+
+
+
+
+<meta name="description" content="说明一、为什么用到私有链？在以太坊的共有链上部署智能合约、发起交易需要花费以太币。而通过修改配置，可以在本机搭建一套以太坊私有链，因为与公有链没关系，既不用同步公有链庞大的数据，也不用花钱购买以太币，很好地满足了智能合约开发和测试的要求，开发好的智能合约也可以很容易地切换接口部署到以太坊公有链上。 二、需要用到哪些工具？ 以太坊客户端以太坊客户端用于接入以太坊网络，进行账户管理、交易、挖矿、智能合">
+<meta name="keywords" content="Blockchain,以太坊,Ethereum,Solidity">
+<meta property="og:type" content="article">
+<meta property="og:title" content="以太坊私有链搭建指南">
+<meta property="og:url" content="https://g2ex.top/2017/09/12/ethereum-guidance/index.html">
+<meta property="og:site_name" content="G2EX">
+<meta property="og:description" content="说明一、为什么用到私有链？在以太坊的共有链上部署智能合约、发起交易需要花费以太币。而通过修改配置，可以在本机搭建一套以太坊私有链，因为与公有链没关系，既不用同步公有链庞大的数据，也不用花钱购买以太币，很好地满足了智能合约开发和测试的要求，开发好的智能合约也可以很容易地切换接口部署到以太坊公有链上。 二、需要用到哪些工具？ 以太坊客户端以太坊客户端用于接入以太坊网络，进行账户管理、交易、挖矿、智能合">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-11-25T02:09:19.688Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="以太坊私有链搭建指南">
+<meta name="twitter:description" content="说明一、为什么用到私有链？在以太坊的共有链上部署智能合约、发起交易需要花费以太币。而通过修改配置，可以在本机搭建一套以太坊私有链，因为与公有链没关系，既不用同步公有链庞大的数据，也不用花钱购买以太币，很好地满足了智能合约开发和测试的要求，开发好的智能合约也可以很容易地切换接口部署到以太坊公有链上。 二、需要用到哪些工具？ 以太坊客户端以太坊客户端用于接入以太坊网络，进行账户管理、交易、挖矿、智能合">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://g2ex.top/2017/09/12/ethereum-guidance/">
+
+
+
+
+
+  <title> 以太坊私有链搭建指南 | G2EX </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?0056c67deccbe6617d059b40d352195f";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">G2EX</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="https://g2ex.top/2017/09/12/ethereum-guidance/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="Yaming Gong">
+    <meta itemprop="description" content>
+    <meta itemprop="image" content="/avatar.png">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="G2EX">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="G2EX" src>
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                以太坊私有链搭建指南
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-09-12T00:00:00+00:00">
+                2017-09-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <a href="/2017/09/12/ethereum-guidance/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/09/12/ethereum-guidance/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h2><h3 id="一、为什么用到私有链？"><a href="#一、为什么用到私有链？" class="headerlink" title="一、为什么用到私有链？"></a>一、为什么用到私有链？</h3><p>在以太坊的共有链上部署智能合约、发起交易需要花费以太币。而通过修改配置，可以在本机搭建一套以太坊私有链，因为与公有链没关系，既不用同步公有链庞大的数据，也不用花钱购买以太币，很好地满足了智能合约开发和测试的要求，开发好的智能合约也可以很容易地切换接口部署到以太坊公有链上。</p>
+<h3 id="二、需要用到哪些工具？"><a href="#二、需要用到哪些工具？" class="headerlink" title="二、需要用到哪些工具？"></a>二、需要用到哪些工具？</h3><ol>
+<li>以太坊客户端<br>以太坊客户端用于接入以太坊网络，进行账户管理、交易、挖矿、智能合约相关的操作。目前有多种语言实现的客户端，常用的有 Go 语言实现的 go-ethereum 客户端 Geth，支持接入以太坊网络并成为一个完整节点，也可作为一个 HTTP-RPC 服务器对外提供 JSON-RPC 接口。<br>其他的客户端有：<ul>
+<li>Parity：Rust 语言实现；</li>
+<li>cpp-ethereum：C++ 语言实现；</li>
+<li>ethereumjs-lib：JavaScript 语言实现；</li>
+<li>Ethereum(J)：Java 语言实现；</li>
+<li>ethereumH：Haskell 语言实现；</li>
+<li>pyethapp： Python 语言实现；</li>
+<li>ruby-ethereum：Ruby 语言实现；</li>
+</ul>
+</li>
+<li>智能合约编译器<br>以太坊支持两种智能合约的编程语言：Solidity 和 Serpent。Serpent 语言面临一些安全问题，现在已经不推荐使用了。Solidity 语法类似 JavaScript，它编译器 solc 可以把智能合约源码编译成以太坊虚拟机 EVM 可以执行的二进制码。<br>现在以太坊提供更方便的在线 IDE —— Remix <a href="https://remix.ethereum.org" target="_blank" rel="noopener">https://remix.ethereum.org</a> 使用 Remix，免去了安装 solc 和编译过程，它可以直接提供部署合约所需的二进制码和 ABI。</li>
+<li>以太坊钱包<br>以太坊提供了图形界面的钱包 Ethereum Wallet 和 Mist Dapp 浏览器。钱包的功能是 Mist 的一个子集，可用于管理账户和交易；Mist 在钱包基础上，还能操作智能合约。为了演示合约部署过程，本文使用了 Geth console 操作，没有用到 Mist，当然，使用 Mist 会更简单。</li>
+</ol>
+<h2 id="安装环境"><a href="#安装环境" class="headerlink" title="安装环境"></a>安装环境</h2><p>这里以 Ubuntu 16.04 为例进行介绍。</p>
+<h3 id="一、安装以太坊客户端"><a href="#一、安装以太坊客户端" class="headerlink" title="一、安装以太坊客户端"></a>一、安装以太坊客户端</h3><p>两种方式可选：PPA 直接安装、源码编译安装。</p>
+<ol>
+<li><p>PPA  直接安装<br>安装必要的工具包：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt install software-properties-common</span><br></pre></td></tr></table></figure>
+
+<p>添加以太坊源：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">add-apt-repository -y ppa:ethereum/ethereum</span><br><span class="line">apt update</span><br></pre></td></tr></table></figure>
+
+<p>安装 go-ethereum：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt install ethereum</span><br></pre></td></tr></table></figure>
+
+<p>安装完成后，可以使用 <code>geth version</code> 命令查看是否安装成功。</p>
+</li>
+<li><p>源码安装<br>因为 go-ethereum 使用 Go 语言编写，编译源码前需要配置好 Go 环境。</p>
+<p><strong>配置 Go 语言环境</strong><br>参照 <a href="https://golang.org/doc/install" target="_blank" rel="noopener">https://golang.org/doc/install</a><br>简单地，以安装 go 1.9 为例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">wget https://storage.googleapis.com/golang/go1.9.linux-amd64.tar.gz</span><br><span class="line">tar -C /usr/local -xzf go1.9.linux-amd64.tar.gz</span><br></pre></td></tr></table></figure>
+
+<p>编辑 <code>/etc/profile</code> 或 <code>$HOME/.profile</code>，在文件最后添加环境变量：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">export PATH=$PATH:/usr/local/go/bin</span><br></pre></td></tr></table></figure>
+
+<p>编辑 <code>$HOME/profile</code> 或 <code>$HOME/.bashrc</code>，添加 go 工作目录环境变量：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">export GOPATH=$HOME/gopath</span><br></pre></td></tr></table></figure>
+
+<p><strong>下载和编译 Geth</strong><br>安装 C 编译器：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt install -y build-essential</span><br></pre></td></tr></table></figure>
+
+<p>下载最新源码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone https://github.com/ethereum/go-ethereum</span><br></pre></td></tr></table></figure>
+
+<p>编译安装：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd go-ethereum</span><br><span class="line">make geth</span><br></pre></td></tr></table></figure>
+
+<p>安装完成后，可以使用 <code>geth version</code> 命令查看是否安装成功。记得把生成的 geth 加入到系统的环境变量中。</p>
+</li>
+</ol>
+<h3 id="二、安装-Solidity-编译器"><a href="#二、安装-Solidity-编译器" class="headerlink" title="二、安装 Solidity 编译器"></a>二、安装 Solidity 编译器</h3><p>Solidity 编译器也有多种方法安装，参照 <a href="http://solidity.readthedocs.io/en/latest/installing-solidity.html" target="_blank" rel="noopener">http://solidity.readthedocs.io/en/latest/installing-solidity.html</a> 这里介绍最简单快捷的安装方式：PPA 直接安装。</p>
+<ol>
+<li><p>PPA 直接安装</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">add-apt-repository ppa:ethereum/ethereum</span><br><span class="line">apt update</span><br><span class="line">apt install solc</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>官方推荐使用基于浏览器的 IDE 环境：Remix <a href="https://remix.ethereum.org" target="_blank" rel="noopener">https://remix.ethereum.org</a></p>
+</li>
+</ol>
+<h2 id="私有链搭建"><a href="#私有链搭建" class="headerlink" title="私有链搭建"></a>私有链搭建</h2><h3 id="一、配置初始状态"><a href="#一、配置初始状态" class="headerlink" title="一、配置初始状态"></a>一、配置初始状态</h3><p>要运行以太坊私有链，需要定义自己的创世区块，创世区块信息写在一个 JSON 格式的配置文件中。首先将下面的内容保存到一个 JSON 文件中，例如 <code>genesis.json</code>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;config&quot;: &#123;</span><br><span class="line">    &quot;chainID&quot;: 1024,</span><br><span class="line">    &quot;homesteadBlock&quot;: 0,</span><br><span class="line">    &quot;eip155Block&quot;: 0,</span><br><span class="line">    &quot;eip158Block&quot;: 0</span><br><span class="line">  &#125;,</span><br><span class="line">  &quot;alloc&quot;: &#123;&#125;,</span><br><span class="line">  &quot;coinbase&quot;: &quot;0x0000000000000000000000000000000000000000&quot;,</span><br><span class="line">  &quot;difficulty&quot;: &quot;0x400&quot;,</span><br><span class="line">  &quot;extraData&quot;: &quot;0x0&quot;,</span><br><span class="line">  &quot;gasLimit&quot;: &quot;0x2fefd8&quot;,</span><br><span class="line">  &quot;nonce&quot;: &quot;0xdeadbeefdeadbeef&quot;,</span><br><span class="line">  &quot;mixhash&quot;: &quot;0x0000000000000000000000000000000000000000000000000000000000000000&quot;,</span><br><span class="line">  &quot;parentHash&quot;: &quot;0x0000000000000000000000000000000000000000000000000000000000000000&quot;,</span><br><span class="line">  &quot;timestamp&quot;: &quot;0x00&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其中，<code>chainID</code> 指定了独立的区块链网络 ID。网络 ID 在连接到其他节点的时候会用到，以太坊公网的网络 ID 是 1，为了不与公有链网络冲突，运行私有链节点的时候要指定自己的网络 ID。不同 ID 网络的节点无法相互连接。配置文件还对当前挖矿难度 <code>difficulty</code>、区块 Gas 消耗限制 <code>gasLimit</code> 等参数进行了设置。</p>
+<p>在 Geth 1.6+ 中，以太坊提供了一个生成创世块的向导工具：puppeth。并且提供了更适合在私有链中使用的 Clique PoA 共识算法。puppeth 的使用，可以参照《<a href="https://github.com/xiaoping378/blog/blob/master/posts/%E4%BB%A5%E5%A4%AA%E5%9D%8A-%E7%A7%81%E6%9C%89%E9%93%BE%E6%90%AD%E5%BB%BA%E5%88%9D%E6%AD%A5%E5%AE%9E%E8%B7%B5.md" target="_blank" rel="noopener">利用puppeth搭建POA共识的以太坊私链网络</a>》</p>
+<h3 id="二、初始化：写入创世区块"><a href="#二、初始化：写入创世区块" class="headerlink" title="二、初始化：写入创世区块"></a>二、初始化：写入创世区块</h3><p>准备好创世区块配置文件后，需要初始化区块链，将上面的创世区块信息写入到区块链中。首先要新建一个目录用来存放区块链数据，假设新建的数据目录为 <code>~/privatechain/data0</code>，<code>genesis.json</code> 保存在 <code>~/privatechain</code> 中，此时目录结构应该是这样的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">privatechain</span><br><span class="line">├── data0</span><br><span class="line">└── genesis.json</span><br></pre></td></tr></table></figure>
+
+<p>接下来进入 privatechain 中，执行初始化命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd privatechain</span><br><span class="line">geth --datadir data0 init genesis.json</span><br></pre></td></tr></table></figure>
+
+<p>上面的命令的主体是 <code>geth init</code>，表示初始化区块链，命令可以带有选项和参数，其中 <code>--datadir</code> 选项后面跟一个目录名，这里为 data0，表示指定数据存放目录为 data0，genesis.json 是 <code>init</code> 命令的参数。</p>
+<p>运行上面的命令，会读取 <code>genesis.json</code> 文件，根据其中的内容，将创世区块写入到区块链中。如果看到以下的输出内容，说明初始化成功了。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">WARN [09-12|04:01:09] No etherbase set and no accounts found as default</span><br><span class="line">INFO [09-12|04:01:09] Allocated cache and file handles         database=/root/work/privatechain/data0/geth/chaindata cache=16 handles=16</span><br><span class="line">INFO [09-12|04:01:09] Writing custom genesis block</span><br><span class="line">INFO [09-12|04:01:09] Successfully wrote genesis state         database=chaindata                                    hash=84e71d…97246e</span><br><span class="line">INFO [09-12|04:01:09] Allocated cache and file handles         database=/root/work/privatechain/data0/geth/lightchaindata cache=16 handles=16</span><br><span class="line">INFO [09-12|04:01:09] Writing custom genesis block</span><br><span class="line">INFO [09-12|04:01:09] Successfully wrote genesis state         database=lightchaindata                                    hash=84e71d…97246e</span><br></pre></td></tr></table></figure>
+
+<p>初始化成功后，会在数据目录 data0 中生成 <code>geth</code> 和 <code>keystore</code> 两个文件夹，此时目录结构如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">privatechain</span><br><span class="line">├── data0</span><br><span class="line">│   ├── geth</span><br><span class="line">│   │   ├── chaindata</span><br><span class="line">│   │   │   ├── 000001.log</span><br><span class="line">│   │   │   ├── CURRENT</span><br><span class="line">│   │   │   ├── LOCK</span><br><span class="line">│   │   │   ├── LOG</span><br><span class="line">│   │   │   └── MANIFEST-000000</span><br><span class="line">│   │   └── lightchaindata</span><br><span class="line">│   │       ├── 000001.log</span><br><span class="line">│   │       ├── CURRENT</span><br><span class="line">│   │       ├── LOCK</span><br><span class="line">│   │       ├── LOG</span><br><span class="line">│   │       └── MANIFEST-000000</span><br><span class="line">│   └── keystore</span><br><span class="line">└── genesis.json</span><br></pre></td></tr></table></figure>
+
+<p>其中 <code>geth/chaindata</code> 中存放的是区块数据，<code>keystore</code> 中存放的是账户数据。</p>
+<h3 id="三、启动私有链节点"><a href="#三、启动私有链节点" class="headerlink" title="三、启动私有链节点"></a>三、启动私有链节点</h3><p>初始化完成后，就有了一条自己的私有链，之后就可以启动自己的私有链节点并做一些操作，在终端中输入以下命令即可启动节点：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">geth --identity &quot;TestNode&quot; --rpc --rpcport &quot;8545&quot; --datadir data0 --port &quot;30303&quot; --nodiscover console</span><br></pre></td></tr></table></figure>
+
+<p>上面命令的主体是 <code>geth console</code>，表示启动节点并进入交互式控制台。<br>各选项含义如下：</p>
+<ul>
+<li>–identity：指定节点 ID；</li>
+<li>–rpc：表示开启 HTTP-RPC 服务；</li>
+<li>–rpcport：指定 HTTP-RPC 服务监听端口号（默认为 8545）；</li>
+<li>–datadir：指定区块链数据的存储位置；</li>
+<li>–port：指定和其他节点连接所用的端口号（默认为 30303）；</li>
+<li>–nodiscover：关闭节点发现机制，防止加入有同样初始配置的陌生节点。</li>
+</ul>
+<p>运行上面的命令后，就启动了区块链节点并进入了该节点的控制台：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">Welcome to the Geth JavaScript console!</span><br><span class="line"></span><br><span class="line">instance: Geth/TestNode/v1.6.7-stable-ab5646c5/linux-amd64/go1.8.1</span><br><span class="line"> modules: admin:1.0 debug:1.0 eth:1.0 miner:1.0 net:1.0 personal:1.0 rpc:1.0 txpool:1.0 web3:1.0</span><br></pre></td></tr></table></figure>
+
+<p>这是一个交互式的 JavaScript 执行环境，在这里面可以执行 JavaScript 代码，其中 <code>&gt;</code> 是命令提示符。在这个环境里也内置了一些用来操作以太坊的 JavaScript 对象，可以直接使用这些对象。这些对象主要包括：</p>
+<ul>
+<li>eth：包含一些跟操作区块链相关的方法；</li>
+<li>net：包含一些查看p2p网络状态的方法；</li>
+<li>admin：包含一些与管理节点相关的方法；</li>
+<li>miner：包含启动&amp;停止挖矿的一些方法；</li>
+<li>personal：主要包含一些管理账户的方法；</li>
+<li>txpool：包含一些查看交易内存池的方法；</li>
+<li>web3：包含了以上对象，还包含一些单位换算的方法。</li>
+</ul>
+<h2 id="控制台操作"><a href="#控制台操作" class="headerlink" title="控制台操作"></a>控制台操作</h2><p>进入以太坊 Javascript Console 后，就可以使用里面的内置对象做一些操作，这些内置对象提供的功能很丰富，比如查看区块和交易、创建账户、挖矿、发送交易、部署智能合约等。</p>
+<p>常用命令有：</p>
+<ul>
+<li>personal.newAccount()：创建账户；</li>
+<li>personal.unlockAccount()：解锁账户；</li>
+<li>eth.accounts：枚举系统中的账户；</li>
+<li>eth.getBalance()：查看账户余额，返回值的单位是 Wei（Wei 是以太坊中最小货币面额单位，类似比特币中的<code>聪</code>，1 ether = 10^18 Wei）；</li>
+<li>eth.blockNumber：列出区块总数；</li>
+<li>eth.getTransaction()：获取交易；</li>
+<li>eth.getBlock()：获取区块；</li>
+<li>miner.start()：开始挖矿；</li>
+<li>miner.stop()：停止挖矿；</li>
+<li>web3.fromWei()：Wei 换算成以太币；</li>
+<li>web3.toWei()：以太币换算成 Wei；</li>
+<li>txpool.status：交易池中的状态；</li>
+<li>admin.addPeer()：连接到其他节点；</li>
+</ul>
+<p>这些命令支持 <code>Tab</code> 键自动补全，具体用法如下。</p>
+<h3 id="一、创建账户"><a href="#一、创建账户" class="headerlink" title="一、创建账户"></a>一、创建账户</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&gt; personal.newAccount()</span><br><span class="line">Passphrase:</span><br><span class="line">Repeat passphrase:</span><br><span class="line">&quot;0x3443ffb2a5ce3f4b80080791e0fde16a3fac2802&quot;</span><br><span class="line">&gt; INFO [09-12|05:55:44] New wallet appeared                     url=keystore:///root/work/privatech… status=Locked</span><br></pre></td></tr></table></figure>
+
+<p>输入两遍密码后，会生成账户地址。</p>
+<p>再创建一个账户：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&gt; personal.newAccount()</span><br><span class="line">Passphrase:</span><br><span class="line">Repeat passphrase:</span><br><span class="line">&quot;0x02bee2a1582bbf58c42bbdfe7b8db4685d4d4c62&quot;</span><br><span class="line">&gt; INFO [09-12|06:10:45] New wallet appeared                     url=keystore:///root/work/privatech… status=Locked</span><br></pre></td></tr></table></figure>
+
+<p>查看刚刚创建的两个账户：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt; eth.accounts</span><br><span class="line">[&quot;0x3443ffb2a5ce3f4b80080791e0fde16a3fac2802&quot;, &quot;0x02bee2a1582bbf58c42bbdfe7b8db4685d4d4c62&quot;]</span><br></pre></td></tr></table></figure>
+
+<h3 id="二、查看账户余额"><a href="#二、查看账户余额" class="headerlink" title="二、查看账户余额"></a>二、查看账户余额</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt; eth.getBalance(eth.accounts[0])</span><br><span class="line">0</span><br><span class="line">&gt; eth.getBalance(eth.accounts[1])</span><br><span class="line">0</span><br></pre></td></tr></table></figure>
+
+<h3 id="三、启动-amp-停止挖矿"><a href="#三、启动-amp-停止挖矿" class="headerlink" title="三、启动&amp;停止挖矿"></a>三、启动&amp;停止挖矿</h3><p>启动挖矿：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt; miner.start(1)</span><br></pre></td></tr></table></figure>
+
+<p>其中 start 的参数表示挖矿使用的线程数。第一次启动挖矿会先生成挖矿所需的 DAG 文件，这个过程有点慢，等进度达到 100% 后，就会开始挖矿，此时屏幕会被挖矿信息刷屏。</p>
+<p>停止挖矿，在 console 中输入：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt; miner.stop()</span><br></pre></td></tr></table></figure>
+
+<p>挖到一个区块会奖励5个以太币，挖矿所得的奖励会进入矿工的账户，这个账户叫做 coinbase，默认情况下 coinbase 是本地账户中的第一个账户，可以通过 miner.setEtherbase() 将其他账户设置成 coinbase。</p>
+<h3 id="四、发送交易"><a href="#四、发送交易" class="headerlink" title="四、发送交易"></a>四、发送交易</h3><p>目前，账户 0 已经挖到了 3 个块的奖励，账户 1 的余额还是0：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt; eth.getBalance(eth.accounts[0])</span><br><span class="line">15000000000000000000</span><br><span class="line">&gt; eth.getBalance(eth.accounts[1])</span><br><span class="line">0</span><br></pre></td></tr></table></figure>
+
+<p>我们要从账户 0 向账户 1 转账，所以要先解锁账户 0，才能发起交易：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt; personal.unlockAccount(eth.accounts[0])</span><br><span class="line">Unlock account 0x3443ffb2a5ce3f4b80080791e0fde16a3fac2802</span><br><span class="line">Passphrase: </span><br><span class="line">true</span><br></pre></td></tr></table></figure>
+
+<p>发送交易，账户 0 -&gt; 账户 1：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&gt; amount = web3.toWei(5,&apos;ether&apos;)</span><br><span class="line">&quot;5000000000000000000&quot;</span><br><span class="line">&gt; eth.sendTransaction(&#123;from:eth.accounts[0],to:eth.accounts[1],value:amount&#125;)</span><br><span class="line">INFO [09-12|07:38:12] Submitted transaction                    fullhash=0x9f5e61f3d686f793e2df6378d1633d7a9d1df8ec8c597441e1355112d102a6ce recipient=0x02bee2a1582bbf58c42bbdfe7b8db4685d4d4c62</span><br><span class="line">&quot;0x9f5e61f3d686f793e2df6378d1633d7a9d1df8ec8c597441e1355112d102a6ce&quot;</span><br></pre></td></tr></table></figure>
+
+<p>此时如果没有挖矿，用 <code>txpool.status</code> 命令可以看到本地交易池中有一个待确认的交易，可以使用 <code>eth.getBlock(&quot;pending&quot;, true).transactions</code> 查看当前待确认交易。</p>
+<p>使用 <code>miner.start()</code> 命令开始挖矿：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt; miner.start(1);admin.sleepBlocks(1);miner.stop();</span><br></pre></td></tr></table></figure>
+
+<p>新区块挖出后，挖矿结束，查看账户 1 的余额，已经收到了账户 0 的以太币：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt; web3.fromWei(eth.getBalance(eth.accounts[1]),&apos;ether&apos;)</span><br><span class="line">5</span><br></pre></td></tr></table></figure>
+
+<h3 id="五、查看交易和区块"><a href="#五、查看交易和区块" class="headerlink" title="五、查看交易和区块"></a>五、查看交易和区块</h3><p>查看当前区块总数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt; eth.blockNumber</span><br><span class="line">4</span><br></pre></td></tr></table></figure>
+
+<p>通过交易 Hash 查看交易（Hash 值包含在上面交易返回值中）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&gt; eth.getTransaction(&quot;0x9f5e61f3d686f793e2df6378d1633d7a9d1df8ec8c597441e1355112d102a6ce&quot;)</span><br><span class="line">&#123;</span><br><span class="line">  blockHash: &quot;0xdc1fb4469bf4613821c303891a71ff0d1f5af9af8c10efdd8bcd8b518533ee7d&quot;,</span><br><span class="line">  blockNumber: 4,</span><br><span class="line">  from: &quot;0x3443ffb2a5ce3f4b80080791e0fde16a3fac2802&quot;,</span><br><span class="line">  gas: 90000,</span><br><span class="line">  gasPrice: 18000000000,</span><br><span class="line">  hash: &quot;0x9f5e61f3d686f793e2df6378d1633d7a9d1df8ec8c597441e1355112d102a6ce&quot;,</span><br><span class="line">  input: &quot;0x&quot;,</span><br><span class="line">  nonce: 0,</span><br><span class="line">  r: &quot;0x4214d2d8d92efc3aafb515d2413ecd45ab3695d9bcc30d9c7c06932de829e064&quot;,</span><br><span class="line">  s: &quot;0x42822033225a2ef662b9b448576e0271b9958e1f4ec912c259e01c84bd1f6681&quot;,</span><br><span class="line">  to: &quot;0x02bee2a1582bbf58c42bbdfe7b8db4685d4d4c62&quot;,</span><br><span class="line">  transactionIndex: 0,</span><br><span class="line">  v: &quot;0x824&quot;,</span><br><span class="line">  value: 5000000000000000000</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>通过区块号查看区块：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">&gt; eth.getBlock(4)</span><br><span class="line">&#123;</span><br><span class="line">  difficulty: 131072,</span><br><span class="line">  extraData: &quot;0xd783010607846765746887676f312e382e31856c696e7578&quot;,</span><br><span class="line">  gasLimit: 3153874,</span><br><span class="line">  gasUsed: 21000,</span><br><span class="line">  hash: &quot;0xdc1fb4469bf4613821c303891a71ff0d1f5af9af8c10efdd8bcd8b518533ee7d&quot;,</span><br><span class="line">  logsBloom: &quot;0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000&quot;,</span><br><span class="line">  miner: &quot;0x3443ffb2a5ce3f4b80080791e0fde16a3fac2802&quot;,</span><br><span class="line">  mixHash: &quot;0x6df88079cf4fbfae98ad7588926fa30becddf4b8b55f93f0380d82ce0533338c&quot;,</span><br><span class="line">  nonce: &quot;0x39455ee908666993&quot;,</span><br><span class="line">  number: 4,</span><br><span class="line">  parentHash: &quot;0x14fe27755d6fcc704f6b7018d5dc8193f702d89f2c7807bf6f0e402a2b0a29d9&quot;,</span><br><span class="line">  receiptsRoot: &quot;0xfcb5b5cc322998562d96339418d08ad8e7c5dd87935f9a3321e040344e3fd095&quot;,</span><br><span class="line">  sha3Uncles: &quot;0x1dcc4de8dec75d7aab85b567b6ccd41ad312451b948a7413f0a142fd40d49347&quot;,</span><br><span class="line">  size: 651,</span><br><span class="line">  stateRoot: &quot;0xdd4a0ce76c7e0ff149853dce5bb4f99592fb1bc3c5e87eb07518a0235ffacd8c&quot;,</span><br><span class="line">  timestamp: 1505202063,</span><br><span class="line">  totalDifficulty: 525312,</span><br><span class="line">  transactions: [&quot;0x9f5e61f3d686f793e2df6378d1633d7a9d1df8ec8c597441e1355112d102a6ce&quot;],</span><br><span class="line">  transactionsRoot: &quot;0xbb909845183e037b15d24fe9ad1805fd00350ae04841aa774be6af96e76fdbf9&quot;,</span><br><span class="line">  uncles: []</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="六、连接到其他节点"><a href="#六、连接到其他节点" class="headerlink" title="六、连接到其他节点"></a>六、连接到其他节点</h3><p>可以通过 <code>admin.addPeer()</code> 方法连接到其他节点，两个节点要要指定相同的 chainID。</p>
+<p>假设有两个节点：节点一和节点二，chainID 都是 1024，通过下面的步骤就可以从节点一连接到节点二。</p>
+<p>首先要知道节点二的 enode 信息，在节点二的 JavaScript console 中执行下面的命令查看 enode 信息：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt; admin.nodeInfo.enode</span><br><span class="line">&quot;enode://d465bcbd5c34da7f4b8e00cbf9dd18e7e2c38fbd6642b7435f340c7d5168947ff2b822146e1dc1b07e02f7c15d5ca09249a92f1d0caa34587c9b2743172259ee@[::]:30303&quot;</span><br></pre></td></tr></table></figure>
+
+<p>然后在节点一的 JavaScript console 中执行 admin.addPeer()，就可以连接到节点二：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt; admin.addPeer(&quot;enode://d465bcbd5c34da7f4b8e00cbf9dd18e7e2c38fbd6642b7435f340c7d5168947ff2b822146e1dc1b07e02f7c15d5ca09249a92f1d0caa34587c9b2743172259ee@127.0.0.1:30304&quot;)</span><br></pre></td></tr></table></figure>
+
+<p>addPeer() 的参数就是节点二的 enode 信息，注意要把 enode 中的 <code>[::]</code> 替换成节点二的 IP 地址。连接成功后，节点二就会开始同步节点一的区块，同步完成后，任意一个节点开始挖矿，另一个节点会自动同步区块，向任意一个节点发送交易，另一个节点也会收到该笔交易。</p>
+<p>通过 <code>admin.peers</code> 可以查看连接到的其他节点信息，通过 <code>net.peerCount</code> 可以查看已连接到的节点数量。</p>
+<p>除了上面的方法，也可以在启动节点的时候指定 <code>--bootnodes</code> 选项连接到其他节点。</p>
+<h2 id="智能合约操作"><a href="#智能合约操作" class="headerlink" title="智能合约操作"></a>智能合约操作</h2><h3 id="一、创建和编译智能合约"><a href="#一、创建和编译智能合约" class="headerlink" title="一、创建和编译智能合约"></a>一、创建和编译智能合约</h3><p>新建一个 Solidity 智能合约文件，命名为 <code>testContract.sol</code>，该合约包含一个方法 <code>multiply()</code>，将输入的两个数相乘后输出：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">pragma solidity ^0.4.0;</span><br><span class="line">contract TestContract</span><br><span class="line">&#123;</span><br><span class="line">    function multiply(uint a, uint b) returns (uint)</span><br><span class="line">    &#123;</span><br><span class="line">        return a * b;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>编译智能合约，获得编译后的 EVM 二进制码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ solc --bin testContract.sol</span><br><span class="line"></span><br><span class="line">======= testContract.sol:TestContract =======</span><br><span class="line">Binary:</span><br><span class="line">6060604052341561000f57600080fd5b5b60b48061001e6000396000f30060606040526000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff168063165c4a1614603d575b600080fd5b3415604757600080fd5b60646004808035906020019091908035906020019091905050607a565b6040518082815260200191505060405180910390f35b600081830290505b929150505600a165627a7a72305820b494a4b3879b3810accf64d4cc3e1be55f2f4a86f49590b8a9b8d7009090a5d30029</span><br></pre></td></tr></table></figure>
+
+<p>再用 solc 获取智能合约的 JSON ABI（Application Binary Interface），其中指定了合约接口，包括可调用的合约方法、变量、事件等：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ solc --abi testContract.sol</span><br><span class="line"></span><br><span class="line">======= testContract.sol:TestContract =======</span><br><span class="line">Contract JSON ABI</span><br><span class="line">[&#123;&quot;constant&quot;:false,&quot;inputs&quot;:[&#123;&quot;name&quot;:&quot;a&quot;,&quot;type&quot;:&quot;uint256&quot;&#125;,&#123;&quot;name&quot;:&quot;b&quot;,&quot;type&quot;:&quot;uint256&quot;&#125;],&quot;name&quot;:&quot;multiply&quot;,&quot;outputs&quot;:[&#123;&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;&#125;],&quot;payable&quot;:false,&quot;stateMutability&quot;:&quot;nonpayable&quot;,&quot;type&quot;:&quot;function&quot;&#125;]</span><br></pre></td></tr></table></figure>
+
+<p>回到 Geth 的控制台，用变量 <code>code</code> 和 <code>abi</code> 记录上面两个值，注意在 code 前加上 <code>0x</code> 前缀：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt; code = &quot;0x6060604052341561000f57600080fd5b5b60b48061001e6000396000f30060606040526000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff168063165c4a1614603d575b600080fd5b3415604757600080fd5b60646004808035906020019091908035906020019091905050607a565b6040518082815260200191505060405180910390f35b600081830290505b929150505600a165627a7a72305820b494a4b3879b3810accf64d4cc3e1be55f2f4a86f49590b8a9b8d7009090a5d30029&quot;</span><br><span class="line">&gt; abi = [&#123;&quot;constant&quot;:false,&quot;inputs&quot;:[&#123;&quot;name&quot;:&quot;a&quot;,&quot;type&quot;:&quot;uint256&quot;&#125;,&#123;&quot;name&quot;:&quot;b&quot;,&quot;type&quot;:&quot;uint256&quot;&#125;],&quot;name&quot;:&quot;multiply&quot;,&quot;outputs&quot;:[&#123;&quot;name&quot;:&quot;&quot;,&quot;type&quot;:&quot;uint256&quot;&#125;],&quot;payable&quot;:false,&quot;stateMutability&quot;:&quot;nonpayable&quot;,&quot;type&quot;:&quot;function&quot;&#125;]</span><br></pre></td></tr></table></figure>
+
+<h3 id="二、部署智能合约"><a href="#二、部署智能合约" class="headerlink" title="二、部署智能合约"></a>二、部署智能合约</h3><p>这里使用账户 0 来部署合约，首先解锁账户：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt; personal.unlockAccount(eth.accounts[0])</span><br><span class="line">Unlock account 0x3443ffb2a5ce3f4b80080791e0fde16a3fac2802</span><br><span class="line">Passphrase:</span><br><span class="line">true</span><br></pre></td></tr></table></figure>
+
+<p>发送部署合约的交易：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&gt; myContract = eth.contract(abi)</span><br><span class="line">...</span><br><span class="line">&gt; contract = myContract.new(&#123;from:eth.accounts[0],data:code,gas:1000000&#125;)</span><br><span class="line"></span><br><span class="line">INFO [09-12|08:05:19] Submitted contract creation              fullhash=0x0a7dfa9cac7ef836a72ed1d5bbfa65c0220347cde4efb067a0b03b15fb70bce1 contract=0x7cbe4019e993f9922b8233502d94890099ee59e6</span><br><span class="line">&#123;</span><br><span class="line">  abi: [&#123;</span><br><span class="line">      constant: false,</span><br><span class="line">      inputs: [&#123;...&#125;, &#123;...&#125;],</span><br><span class="line">      name: &quot;multiply&quot;,</span><br><span class="line">      outputs: [&#123;...&#125;],</span><br><span class="line">      payable: false,</span><br><span class="line">      stateMutability: &quot;nonpayable&quot;,</span><br><span class="line">      type: &quot;function&quot;</span><br><span class="line">  &#125;],</span><br><span class="line">  address: undefined,</span><br><span class="line">  transactionHash: &quot;0x0a7dfa9cac7ef836a72ed1d5bbfa65c0220347cde4efb067a0b03b15fb70bce1&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>此时如果没有挖矿，用 <code>txpool.status</code> 命令可以看到本地交易池中有一个待确认的交易。使用下面的命令查看当前待确认的交易：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">[&#123;</span><br><span class="line">    blockHash: &quot;0xfedd6fef9f25e96a5a20b5ffcd152e9fe05d193ae0989c25d6197d2441c2c09b&quot;,</span><br><span class="line">    blockNumber: 5,</span><br><span class="line">    from: &quot;0x3443ffb2a5ce3f4b80080791e0fde16a3fac2802&quot;,</span><br><span class="line">    gas: 1000000,</span><br><span class="line">    gasPrice: 18000000000,</span><br><span class="line">    hash: &quot;0x0a7dfa9cac7ef836a72ed1d5bbfa65c0220347cde4efb067a0b03b15fb70bce1&quot;,</span><br><span class="line">    input: &quot;0x6060604052341561000f57600080fd5b5b60b48061001e6000396000f30060606040526000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff168063165c4a1614603d575b600080fd5b3415604757600080fd5b60646004808035906020019091908035906020019091905050607a565b6040518082815260200191505060405180910390f35b600081830290505b929150505600a165627a7a72305820b494a4b3879b3810accf64d4cc3e1be55f2f4a86f49590b8a9b8d7009090a5d30029&quot;,</span><br><span class="line">    nonce: 3,</span><br><span class="line">    r: &quot;0xfe7139a31694a36f946e7182c35c52a21bf31d33994490815f63f6674e84dc93&quot;,</span><br><span class="line">    s: &quot;0x4701a984ee93d2a323fac55547b31534b11915599de75202a1d62061241fefbf&quot;,</span><br><span class="line">    to: null,</span><br><span class="line">    transactionIndex: 0,</span><br><span class="line">    v: &quot;0x823&quot;,</span><br><span class="line">    value: 0</span><br><span class="line">&#125;]</span><br></pre></td></tr></table></figure>
+
+<p>使用 <code>miner.start()</code> 命令开始挖矿，一段时间后交易会被确认，随新区块进入区块链。</p>
+<h3 id="三、调用智能合约"><a href="#三、调用智能合约" class="headerlink" title="三、调用智能合约"></a>三、调用智能合约</h3><p>使用以下命令发送交易，<code>sendTransaction</code> 方法的前几个参数应该与合约中 <code>multiply</code> 方法的输入参数对应。这种情况下，交易会通过挖矿记录到区块链中：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt; contract.multiply(2, 4, &#123;from:eth.accounts[0]&#125;)</span><br><span class="line"></span><br><span class="line">INFO [09-12|08:24:14] Submitted transaction                    fullhash=0x29b47d580ba6ccb2445aa3ebdcb14567bd5cbc6004edef7a4064c36e0606bca2 recipient=0x7cbe4019e993f9922b8233502d94890099ee59e6</span><br><span class="line">&quot;0x29b47d580ba6ccb2445aa3ebdcb14567bd5cbc6004edef7a4064c36e0606bca2&quot;</span><br></pre></td></tr></table></figure>
+
+<p>如果只是本地运行该方法查看返回结果，可以采用如下方式：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt; contract.multiply(2，4)</span><br><span class="line">8</span><br></pre></td></tr></table></figure>
+
+<h2 id="术语说明"><a href="#术语说明" class="headerlink" title="术语说明"></a>术语说明</h2><p>术语 |  | 说明<br>—–|—–<br>ABI | Application Binary Interface，应用二进制接口 | 其中指定了合约接口，包括可调用的合约方法、变量、事件等。<br>DApp | Decentralized App，去中心化的应用程序 | 基于智能合约的应用称为去中心化的应用程序。<br>EVM | Ethereum Virtual Machine，以太坊虚拟机 | 以太坊智能合约的运行环境。<br>Gas | （消耗的）汽油 | 在以太坊上发起交易、部署合约和调用合约都要消耗一定量的以太币，这些消耗的以太币称为 Gas。<br>Geth | - | 以太坊客户端 go-ethereum，使用 Go 语言编写，是最常用的以太坊客户端之一。<br>Solidity | - | 以太坊智能合约的一种编程语言，类似 JavaScript。<br>Remix IDE | <a href="https://remix.ethereum.org" target="_blank" rel="noopener">https://remix.ethereum.org</a> | 基于浏览器的 Solidity 集成开发环境，在浏览器中编写和调试智能合约。</p>
+<h2 id="参考内容"><a href="#参考内容" class="headerlink" title="参考内容"></a>参考内容</h2><ul>
+<li>《区块链——原理、设计与应用》杨保华、陈昌编著，机械工业出版</li>
+<li>以太坊学习笔记：私有链搭建操作指南 <a href="https://my.oschina.net/u/2349981/blog/865256" target="_blank" rel="noopener">https://my.oschina.net/u/2349981/blog/865256</a></li>
+<li>利用puppeth搭建POA共识的以太坊私链网络 <a href="https://github.com/xiaoping378/blog/blob/master/posts/%E4%BB%A5%E5%A4%AA%E5%9D%8A-%E7%A7%81%E6%9C%89%E9%93%BE%E6%90%AD%E5%BB%BA%E5%88%9D%E6%AD%A5%E5%AE%9E%E8%B7%B5.md" target="_blank" rel="noopener">https://github.com/xiaoping378/blog/blob/master/posts/%E4%BB%A5%E5%A4%AA%E5%9D%8A-%E7%A7%81%E6%9C%89%E9%93%BE%E6%90%AD%E5%BB%BA%E5%88%9D%E6%AD%A5%E5%AE%9E%E8%B7%B5.md</a></li>
+<li>区块链技术指南 <a href="https://yeasy.gitbooks.io/blockchain_guide/ethereum/install.html" target="_blank" rel="noopener">https://yeasy.gitbooks.io/blockchain_guide/ethereum/install.html</a></li>
+<li>Solidity 官方文档 <a href="http://solidity.readthedocs.io/en/latest/installing-solidity.html" target="_blank" rel="noopener">http://solidity.readthedocs.io/en/latest/installing-solidity.html</a></li>
+<li>Go 官方文档 <a href="https://golang.org/doc/install" target="_blank" rel="noopener">https://golang.org/doc/install</a></li>
+</ul>
+<blockquote>
+<p>更多区块链资料，请访问 <a href="https://github.com/gymgle/blockchain-reference" target="_blank" rel="noopener">https://github.com/gymgle/blockchain-reference</a></p>
+</blockquote>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Blockchain/" rel="tag"># Blockchain</a>
+          
+            <a href="/tags/以太坊/" rel="tag"># 以太坊</a>
+          
+            <a href="/tags/Ethereum/" rel="tag"># Ethereum</a>
+          
+            <a href="/tags/Solidity/" rel="tag"># Solidity</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/08/04/android-tv-notes/" rel="next" title="Android 电视折腾记">
+                <i class="fa fa-chevron-left"></i> Android 电视折腾记
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/10/22/windows-linux-git-proxy-cmd/" rel="prev" title="Win/Linux 命令行、终端和 Git 代理设置">
+                Win/Linux 命令行、终端和 Git 代理设置 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/avatar.png" alt="Yaming Gong">
+          <p class="site-author-name" itemprop="name">Yaming Gong</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">63</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">102</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/gymgle" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://twitter.com/gymgle" target="_blank" title="Twitter">
+                  
+                    <i class="fa fa-fw fa-twitter"></i>
+                  
+                  Twitter
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/773662567" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  Weibo
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.flickr.com/photos/gymgle/" target="_blank" title="Flickr">
+                  
+                    <i class="fa fa-fw fa-flickr"></i>
+                  
+                  Flickr
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+          <div class="cc-license motion-element" itemprop="license">
+            <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" target="_blank">
+              <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons">
+            </a>
+          </div>
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#说明"><span class="nav-number">1.</span> <span class="nav-text">说明</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#一、为什么用到私有链？"><span class="nav-number">1.1.</span> <span class="nav-text">一、为什么用到私有链？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二、需要用到哪些工具？"><span class="nav-number">1.2.</span> <span class="nav-text">二、需要用到哪些工具？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装环境"><span class="nav-number">2.</span> <span class="nav-text">安装环境</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#一、安装以太坊客户端"><span class="nav-number">2.1.</span> <span class="nav-text">一、安装以太坊客户端</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二、安装-Solidity-编译器"><span class="nav-number">2.2.</span> <span class="nav-text">二、安装 Solidity 编译器</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#私有链搭建"><span class="nav-number">3.</span> <span class="nav-text">私有链搭建</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#一、配置初始状态"><span class="nav-number">3.1.</span> <span class="nav-text">一、配置初始状态</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二、初始化：写入创世区块"><span class="nav-number">3.2.</span> <span class="nav-text">二、初始化：写入创世区块</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#三、启动私有链节点"><span class="nav-number">3.3.</span> <span class="nav-text">三、启动私有链节点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#控制台操作"><span class="nav-number">4.</span> <span class="nav-text">控制台操作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#一、创建账户"><span class="nav-number">4.1.</span> <span class="nav-text">一、创建账户</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二、查看账户余额"><span class="nav-number">4.2.</span> <span class="nav-text">二、查看账户余额</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#三、启动-amp-停止挖矿"><span class="nav-number">4.3.</span> <span class="nav-text">三、启动&amp;停止挖矿</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#四、发送交易"><span class="nav-number">4.4.</span> <span class="nav-text">四、发送交易</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#五、查看交易和区块"><span class="nav-number">4.5.</span> <span class="nav-text">五、查看交易和区块</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#六、连接到其他节点"><span class="nav-number">4.6.</span> <span class="nav-text">六、连接到其他节点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#智能合约操作"><span class="nav-number">5.</span> <span class="nav-text">智能合约操作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#一、创建和编译智能合约"><span class="nav-number">5.1.</span> <span class="nav-text">一、创建和编译智能合约</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二、部署智能合约"><span class="nav-number">5.2.</span> <span class="nav-text">二、部署智能合约</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#三、调用智能合约"><span class="nav-number">5.3.</span> <span class="nav-text">三、调用智能合约</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#术语说明"><span class="nav-number">6.</span> <span class="nav-text">术语说明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考内容"><span class="nav-number">7.</span> <span class="nav-text">参考内容</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy;  2012 - 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yaming Gong</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+    <script type="text/javascript">
+      var disqus_shortname = 'g2ex';
+      var disqus_identifier = '2017/09/12/ethereum-guidance/';
+
+      var disqus_title = "以太坊私有链搭建指南";
+
+
+      function run_disqus_script(disqus_script) {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      }
+
+      run_disqus_script('count.js');
+
+      
+        var disqus_config = function () {
+            this.page.url = disqus_url;
+            this.page.identifier = disqus_identifier;
+            this.page.title = disqus_title;
+        };
+        run_disqus_script('embed.js');
+      
+
+    </script>
+  
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

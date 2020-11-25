@@ -1,0 +1,828 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="timeline,js,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="G2EX" type="application/atom+xml">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0">
+
+
+
+
+
+
+<meta name="description" content="一、背景介绍最初发现 TimelineJS 是在 2014 年。为了制造一个惊喜，用它做了一个与爱人从相识到结婚的时间线。 转眼 2020，TimelineJS 也有了第三个版本。 对于平时有记录习惯的人来说，拥有一个关于自己的易读美观的故事线是一件非常有成就感的事，我自己便属于这类人。另一方面，TimelineJS 仍然非常小众，而且国内几乎没有对它的介绍和使用说明。本文的目的是便是能够把它的使">
+<meta name="keywords" content="timeline,js">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何拥有一个漂亮的故事线">
+<meta property="og:url" content="https://g2ex.top/2020/04/25/timelinejs/index.html">
+<meta property="og:site_name" content="G2EX">
+<meta property="og:description" content="一、背景介绍最初发现 TimelineJS 是在 2014 年。为了制造一个惊喜，用它做了一个与爱人从相识到结婚的时间线。 转眼 2020，TimelineJS 也有了第三个版本。 对于平时有记录习惯的人来说，拥有一个关于自己的易读美观的故事线是一件非常有成就感的事，我自己便属于这类人。另一方面，TimelineJS 仍然非常小众，而且国内几乎没有对它的介绍和使用说明。本文的目的是便是能够把它的使">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/gymgle/imgur/2020-04-25_174900.webp">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/gymgle/imgur/2020-04-25_194147.webp">
+<meta property="og:updated_time" content="2020-11-25T02:09:19.688Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="如何拥有一个漂亮的故事线">
+<meta name="twitter:description" content="一、背景介绍最初发现 TimelineJS 是在 2014 年。为了制造一个惊喜，用它做了一个与爱人从相识到结婚的时间线。 转眼 2020，TimelineJS 也有了第三个版本。 对于平时有记录习惯的人来说，拥有一个关于自己的易读美观的故事线是一件非常有成就感的事，我自己便属于这类人。另一方面，TimelineJS 仍然非常小众，而且国内几乎没有对它的介绍和使用说明。本文的目的是便是能够把它的使">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/gymgle/imgur/2020-04-25_174900.webp">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://g2ex.top/2020/04/25/timelinejs/">
+
+
+
+
+
+  <title> 如何拥有一个漂亮的故事线 | G2EX </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?0056c67deccbe6617d059b40d352195f";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">G2EX</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="https://g2ex.top/2020/04/25/timelinejs/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="Yaming Gong">
+    <meta itemprop="description" content>
+    <meta itemprop="image" content="/avatar.png">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="G2EX">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="G2EX" src>
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                如何拥有一个漂亮的故事线
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-04-25T20:21:00+00:00">
+                2020-04-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <a href="/2020/04/25/timelinejs/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/04/25/timelinejs/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="一、背景介绍"><a href="#一、背景介绍" class="headerlink" title="一、背景介绍"></a>一、背景介绍</h2><p>最初发现 TimelineJS 是在 2014 年。为了制造一个惊喜，用它做了一个与爱人从相识到结婚的时间线。</p>
+<p>转眼 2020，TimelineJS 也有了第三个版本。</p>
+<p>对于平时有记录习惯的人来说，拥有一个关于自己的易读美观的故事线是一件非常有成就感的事，我自己便属于这类人。另一方面，TimelineJS 仍然非常小众，而且国内几乎没有对它的介绍和使用说明。本文的目的是便是能够把它的使用方法描述清晰。</p>
+<h3 id="TimelineJS-能做什么"><a href="#TimelineJS-能做什么" class="headerlink" title="TimelineJS 能做什么"></a>TimelineJS 能做什么</h3><p>官网：<a href="https://timeline.knightlab.com/" target="_blank" rel="noopener">https://timeline.knightlab.com/</a></p>
+<p>TimelineJS 是 Northwestern University Knight Lab 社区的一个产品，它可以用来制作时间线（时间轴）的故事，元素支持文本、图片、音乐、视频、地图。官网罗列出的类型包括：</p>
+<blockquote>
+<p>Twitter, Flickr, YouTube, Vimeo, Vine, Dailymotion, Google Maps, Wikipedia, SoundCloud, Document Cloud and more！</p>
+</blockquote>
+<p>在官网上能看到几个示例，比如对美国歌手惠特妮·休斯顿的生平介绍：<a href="https://timeline.knightlab.com/examples/houston/index.html" target="_blank" rel="noopener">https://timeline.knightlab.com/examples/houston/index.html</a></p>
+<p><img src="https://cdn.jsdelivr.net/gh/gymgle/imgur/2020-04-25_174900.webp" alt="whitneyhouston"></p>
+<h3 id="本文适用的读者"><a href="#本文适用的读者" class="headerlink" title="本文适用的读者"></a>本文适用的读者</h3><p>TimelineJS 虽然适用简单，但如果你能够：</p>
+<ul>
+<li>懂点前端知识；</li>
+<li>懂点网站托管知识；</li>
+<li>最好熟悉 JSON 语法；</li>
+<li>最好能科学上网（不会也没关系，一样可以本地使用）；</li>
+</ul>
+<p>那么，TimelineJS 对你来说毫无门槛。</p>
+<h2 id="二、几种使用方法"><a href="#二、几种使用方法" class="headerlink" title="二、几种使用方法"></a>二、几种使用方法</h2><p>要想使用 TimelineJS 制作故事线，需要从以下两个方面考虑：</p>
+<ul>
+<li>故事线的数据存放到哪里</li>
+<li>故事线的网页运行在哪里</li>
+</ul>
+<p>幸运的是，这两个方面官方都考虑到了，使用 Google docs 来存放故事线的数据，Knight Lab 提供页面托管。只要按照这里的 4 个步骤 <a href="https://timeline.knightlab.com/#make" target="_blank" rel="noopener">https://timeline.knightlab.com/#make</a> 就能生成 Knight Lab 给你的一个链接。对于想尝试一下的人来说，这样就足够了，简单么！</p>
+<p>但是，它实际上是支持以下三种组合使用的：</p>
+<ol>
+<li><strong>Knight Lab + Google docs</strong>  # 官方推荐，需科学上网</li>
+<li><strong>自己的页面 + Google docs</strong>  # 可个性化定制页面，需科学上网</li>
+<li><strong>自己的页面 + JSON 文件</strong>      # 可个性化定制页面</li>
+</ol>
+<p>第一种是上面官方推荐的用法。对于想要个性化定制页面的用户来说，就需要使用后两种方法了。对于不能使用 Google 服务的用户来说，就只能选择第三种方法了。</p>
+<p>从隐私方面来考虑，一旦使用 Google docs 这种组合，就意味着需要把文档公开，所以对于不想公开故事线信息的人来说，最好的办法就是使用本地的 JSON 文件，也就是第三种组合。</p>
+<p>接下来详细介绍一下后两种组合的使用方法。</p>
+<h2 id="三、详细使用"><a href="#三、详细使用" class="headerlink" title="三、详细使用"></a>三、详细使用</h2><h3 id="1-自己的页面-Google-docs"><a href="#1-自己的页面-Google-docs" class="headerlink" title="1. 自己的页面 + Google docs"></a>1. 自己的页面 + Google docs</h3><p>按照 <a href="https://timeline.knightlab.com/#make" target="_blank" rel="noopener">https://timeline.knightlab.com/#make</a> 这里前两个步骤：</p>
+<p>第一步、点击 <a href="https://docs.google.com/spreadsheets/d/1pHBvXN7nmGkiG8uQSUB82eNlnL8xHu6kydzH_-eguHQ/copy" target="_blank" rel="noopener">这里复制一份时间线数据的表格模版</a>；</p>
+<p>第二步、把你的表格发布到网络后，复制表格的 URL；</p>
+<p>第三步、创建一个自己的 HTML 页面，把第 16 行的链接替换为你自己表格的 URL：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span> <span class="attr">lang</span>=<span class="string">"en"</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span>Timeline<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">"utf-8"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">link</span> <span class="attr">title</span>=<span class="string">"timeline-styles"</span> <span class="attr">rel</span>=<span class="string">"stylesheet"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">href</span>=<span class="string">"https://cdn.knightlab.com/libs/timeline3/latest/css/timeline.css"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"https://cdn.knightlab.com/libs/timeline3/latest/js/timeline.js"</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">'timeline-embed'</span> <span class="attr">style</span>=<span class="string">"width: 100%; height: 600px"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span>&gt;</span></span><br><span class="line"><span class="javascript">        timeline = <span class="keyword">new</span> TL.Timeline(<span class="string">'timeline-embed'</span>,</span></span><br><span class="line"><span class="javascript">            <span class="string">'https://docs.google.com/spreadsheets/d/1cWqQBZCkX9GpzFtxCWHoqFXCHg-ylTVUWlnrdYMzKUI/pubhtml'</span>);</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>这样，在本地打开这个页面，就可以看到自己的故事线了。</p>
+<h3 id="2-自己的页面-JSON-文件"><a href="#2-自己的页面-JSON-文件" class="headerlink" title="2. 自己的页面 + JSON 文件"></a>2. 自己的页面 + JSON 文件</h3><p>为了直接能从本地引用 timeline.js 和 css 文件，从这里 <a href="https://cdn.knightlab.com/libs/timeline3/latest/timeline3.zip" target="_blank" rel="noopener">https://cdn.knightlab.com/libs/timeline3/latest/timeline3.zip</a> 下载官方的编译后压缩包，解压到本地网页目录，重命名为 <code>build</code>。这时，你的网页目录应该是这样的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">└── build</span><br><span class="line">    ├── css</span><br><span class="line">    │   ├── fonts</span><br><span class="line">    │   ├── icons</span><br><span class="line">    │   ├── themes</span><br><span class="line">    │   └── timeline.css</span><br><span class="line">    ├── embed</span><br><span class="line">    │   └── index.html</span><br><span class="line">    └── js</span><br><span class="line">        ├── library</span><br><span class="line">        ├── locale</span><br><span class="line">        ├── timeline-embed-cdn.js</span><br><span class="line">        ├── timeline-embed.js</span><br><span class="line">        ├── timeline-min.js</span><br><span class="line">        └── timeline.js</span><br></pre></td></tr></table></figure>
+
+<p>接下来，创建一个时间线的 JSON 文件，可以直接下载 惠特妮·休斯顿 的<a href="https://github.com/NUKnightLab/TimelineJS3/blob/master/website/templates/examples/houston/timeline3.json" target="_blank" rel="noopener">示例</a>，放到网页目录中，重命名为 <code>data.json</code>。</p>
+<p>接下来，创建一个 HTML 文件，名字为 <code>index.html</code>，内容如下：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span> <span class="attr">lang</span>=<span class="string">"en"</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span>Timeline<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">"utf-8"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">name</span>=<span class="string">"apple-mobile-web-app-capable"</span> <span class="attr">content</span>=<span class="string">"yes"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">name</span>=<span class="string">"apple-touch-fullscreen"</span> <span class="attr">content</span>=<span class="string">"yes"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!-- build:css https://cdn.knightlab.com/libs/timeline3/latest/css/timeline.css --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">link</span> <span class="attr">title</span>=<span class="string">"timeline-styles"</span> <span class="attr">rel</span>=<span class="string">"stylesheet"</span> <span class="attr">href</span>=<span class="string">"./build/css/timeline.css"</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- endbuild --&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- build:js https://cdn.knightlab.com/libs/timeline3/latest/js/timeline-min.js.js --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"./build/js/timeline-min.js"</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- endbuild --&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!-- Style--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">style</span>&gt;</span></span><br><span class="line">        html, body &#123;</span><br><span class="line">        height:100%;</span><br><span class="line">        padding: 0px;</span><br><span class="line">        margin: 0px;</span><br><span class="line">        &#125;</span><br><span class="line">      <span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"timeline-embed"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"timeline"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="javascript">        $(<span class="built_in">document</span>).ready(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">            <span class="keyword">var</span> embed = <span class="built_in">document</span>.getElementById(<span class="string">'timeline-embed'</span>);</span></span><br><span class="line"><span class="javascript">            embed.style.height = getComputedStyle(<span class="built_in">document</span>.body).height;</span></span><br><span class="line"><span class="javascript">            <span class="built_in">window</span>.timeline = <span class="keyword">new</span> TL.Timeline(<span class="string">'timeline-embed'</span>, <span class="string">'data.json'</span>, &#123;</span></span><br><span class="line"><span class="javascript">                hash_bookmark: <span class="literal">false</span></span></span><br><span class="line">            &#125;);</span><br><span class="line"><span class="javascript">            <span class="built_in">window</span>.addEventListener(<span class="string">'resize'</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">                <span class="keyword">var</span> embed = <span class="built_in">document</span>.getElementById(<span class="string">'timeline-embed'</span>);</span></span><br><span class="line"><span class="javascript">                embed.style.height = getComputedStyle(<span class="built_in">document</span>.body).height;</span></span><br><span class="line">                timeline.updateDisplay();</span><br><span class="line">            &#125;)</span><br><span class="line">        &#125;);</span><br><span class="line">    <span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>这时，你的页面目录结构应该为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├── build</span><br><span class="line">│   ├── css</span><br><span class="line">│   ├── embed</span><br><span class="line">│   └── js</span><br><span class="line">├── data.json</span><br><span class="line">└── index.html</span><br></pre></td></tr></table></figure>
+
+<p>如果本地直接打开 index.html，会在页面的调试工具中看到跨域的错误：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Access to XMLHttpRequest at &apos;file:///path/to/your/data.json&apos; from origin &apos;null&apos; has been blocked by CORS policy: Cross origin requests are only supported for protocol schemes: http, data, chrome, chrome-extension, https.</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://cdn.jsdelivr.net/gh/gymgle/imgur/2020-04-25_194147.webp" alt="cors"></p>
+<p>跨域错误的原因是 timeline.js 读取的 json 文件是本地文件，不是 http 这种 URL 的。要解决这个问题，可以考虑使用 http server 把页面托管起来。Windows 用户可以选择 <a href="https://chrome.google.com/webstore/detail/web-server-for-chrome/ofhbbkphhbklhfoeikjpcbhemlocgigb" target="_blank" rel="noopener">Web Server for Chrome</a> 扩展，把网页目录托管起来。当然 Linux 和 Mac 用户也可以这样用，既然你都用 Linux 或 Mac 了，就跟着我一起折腾吧。</p>
+<p>接下来，我们尝试一下 Nginx 来托管静态页面，无需编译安装 Nginx，直接用 Docker 来运行即可。（前置条件：你要自己安装 Docker for Linux or Docker for Mac）</p>
+<p>在网页目录新建一个 <code>start-nginx-docker.sh</code> 文件，内容如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run --name timeline-nginx -v $&#123;PWD&#125;:/usr/share/nginx/html -p 8080:80 -d nginx</span><br></pre></td></tr></table></figure>
+
+<p>这时，你的网页目录应该是这样的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├── build</span><br><span class="line">│   ├── css</span><br><span class="line">│   ├── embed</span><br><span class="line">│   └── js</span><br><span class="line">├── data.json</span><br><span class="line">├── index.html</span><br><span class="line">└── start-nginx-docker.sh</span><br></pre></td></tr></table></figure>
+
+<p>在该目录下，运行 <code>sh start-nginx-docker.sh</code> 命令，会自动下载 Nginx 最新的镜像并运行。</p>
+<p>打开 <a href="http://127.0.0.1:8080" target="_blank" rel="noopener">http://127.0.0.1:8080</a> 就能浏览了。</p>
+<p>剩下的事，就是去修改你的 json 文件。</p>
+<p>TimelineJS 的 JSON 中字段的意思都在这里进行了说明 <a href="https://timeline.knightlab.com/docs/json-format.html" target="_blank" rel="noopener">https://timeline.knightlab.com/docs/json-format.html</a></p>
+<h2 id="四、个性化页面"><a href="#四、个性化页面" class="headerlink" title="四、个性化页面"></a>四、个性化页面</h2><h3 id="自定义字体"><a href="#自定义字体" class="headerlink" title="自定义字体"></a>自定义字体</h3><p>TimelineJS 提供了几个预选字体集，如果使用内置的字体，可以在 HTML 中这样写：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">link</span> <span class="attr">title</span>=<span class="string">"timeline-styles"</span> <span class="attr">rel</span>=<span class="string">"stylesheet"</span> <span class="attr">href</span>=<span class="string">"https://cdn.knightlab.com/libs/timeline3/latest/css/timeline.css"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">link</span> <span class="attr">title</span>=<span class="string">"timeline-styles"</span> <span class="attr">rel</span>=<span class="string">"stylesheet"</span> <span class="attr">href</span>=<span class="string">"https://cdn.knightlab.com/libs/timeline3/latest/css/fonts/font.abril-droidsans.css"</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>font.abril-droidsans.css 可以替换为下面其他的字体：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">font.abril-droidsans.css</span><br><span class="line">font.amatic-andika.css</span><br><span class="line">font.bevan-pontanosans.css</span><br><span class="line">font.bitter-raleway.css</span><br><span class="line">font.clicker-garamond.css</span><br><span class="line">font.dancing-ledger.css</span><br><span class="line">font.default.css</span><br><span class="line">font.fjalla-average.css</span><br><span class="line">font.georgia-helvetica.css</span><br><span class="line">font.knightlab.css</span><br><span class="line">font.lustria-lato.css</span><br><span class="line">font.medula-lato.css</span><br><span class="line">font.oldstandard.css</span><br><span class="line">font.opensans-gentiumbook.css</span><br><span class="line">font.playfair-faunaone.css</span><br><span class="line">font.playfair.css</span><br><span class="line">font.pt.css</span><br><span class="line">font.roboto-megrim.css</span><br><span class="line">font.rufina-sintony.css</span><br><span class="line">font.ubuntu.css</span><br><span class="line">font.unicaone-vollkorn.css</span><br></pre></td></tr></table></figure>
+
+<h3 id="自定义选项"><a href="#自定义选项" class="headerlink" title="自定义选项"></a>自定义选项</h3><p>定义 <code>additionalOptions</code> 并在实例化 Timeline 的时候作为第三个参数传入。详细的个性化选项可以参考 <a href="https://timeline.knightlab.com/docs/options.html" target="_blank" rel="noopener">https://timeline.knightlab.com/docs/options.html</a></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span>&gt;</span></span><br><span class="line"><span class="javascript">    <span class="keyword">var</span> additionalOptions = &#123;</span></span><br><span class="line"><span class="javascript">        start_at_end: <span class="literal">true</span>,</span></span><br><span class="line">        default_bg_color: &#123;</span><br><span class="line">            r: 0,</span><br><span class="line">            g: 0,</span><br><span class="line">            b: 0</span><br><span class="line">        &#125;,</span><br><span class="line">        timenav_height: 250</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="javascript">    timeline = <span class="keyword">new</span> TL.Timeline(<span class="string">'timeline-embed'</span>,</span></span><br><span class="line"><span class="javascript">        <span class="string">'https://docs.google.com/spreadsheets/d/1cWqQBZCkX9GpzFtxCWHoqFXCHg-ylTVUWlnrdYMzKUI/pubhtml'</span>,</span></span><br><span class="line">        additionalOptions);</span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="五、还有什么"><a href="#五、还有什么" class="headerlink" title="五、还有什么"></a>五、还有什么</h2><p>页面 + JSON 文件方式除了可以本地浏览，也可以部署到网络上，比如 github pages。</p>
+<h2 id="六、参考"><a href="#六、参考" class="headerlink" title="六、参考"></a>六、参考</h2><p>官方文档 <a href="https://timeline.knightlab.com/docs/index.html" target="_blank" rel="noopener">https://timeline.knightlab.com/docs/index.html</a></p>
+<p>HTML中使用 TimelineJS <a href="https://timeline.knightlab.com/docs/instantiate-a-timeline.html" target="_blank" rel="noopener">https://timeline.knightlab.com/docs/instantiate-a-timeline.html</a></p>
+<p>Timeline JSON 字段说明 <a href="https://timeline.knightlab.com/docs/json-format.html" target="_blank" rel="noopener">https://timeline.knightlab.com/docs/json-format.html</a></p>
+<p>Timeline 个性化选项说明 <a href="https://timeline.knightlab.com/docs/options.html" target="_blank" rel="noopener">https://timeline.knightlab.com/docs/options.html</a></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/timeline/" rel="tag"># timeline</a>
+          
+            <a href="/tags/js/" rel="tag"># js</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/09/17/understanding-raft/" rel="next" title="理解 Raft 分布式共识算法">
+                <i class="fa fa-chevron-left"></i> 理解 Raft 分布式共识算法
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/07/04/update-with-webp/" rel="prev" title="WebP 更新">
+                WebP 更新 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/avatar.png" alt="Yaming Gong">
+          <p class="site-author-name" itemprop="name">Yaming Gong</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">63</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">102</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/gymgle" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://twitter.com/gymgle" target="_blank" title="Twitter">
+                  
+                    <i class="fa fa-fw fa-twitter"></i>
+                  
+                  Twitter
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/773662567" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  Weibo
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.flickr.com/photos/gymgle/" target="_blank" title="Flickr">
+                  
+                    <i class="fa fa-fw fa-flickr"></i>
+                  
+                  Flickr
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+          <div class="cc-license motion-element" itemprop="license">
+            <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" target="_blank">
+              <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons">
+            </a>
+          </div>
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、背景介绍"><span class="nav-number">1.</span> <span class="nav-text">一、背景介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#TimelineJS-能做什么"><span class="nav-number">1.1.</span> <span class="nav-text">TimelineJS 能做什么</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#本文适用的读者"><span class="nav-number">1.2.</span> <span class="nav-text">本文适用的读者</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、几种使用方法"><span class="nav-number">2.</span> <span class="nav-text">二、几种使用方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、详细使用"><span class="nav-number">3.</span> <span class="nav-text">三、详细使用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-自己的页面-Google-docs"><span class="nav-number">3.1.</span> <span class="nav-text">1. 自己的页面 + Google docs</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-自己的页面-JSON-文件"><span class="nav-number">3.2.</span> <span class="nav-text">2. 自己的页面 + JSON 文件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#四、个性化页面"><span class="nav-number">4.</span> <span class="nav-text">四、个性化页面</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#自定义字体"><span class="nav-number">4.1.</span> <span class="nav-text">自定义字体</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#自定义选项"><span class="nav-number">4.2.</span> <span class="nav-text">自定义选项</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#五、还有什么"><span class="nav-number">5.</span> <span class="nav-text">五、还有什么</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#六、参考"><span class="nav-number">6.</span> <span class="nav-text">六、参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy;  2012 - 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yaming Gong</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+    <script type="text/javascript">
+      var disqus_shortname = 'g2ex';
+      var disqus_identifier = '2020/04/25/timelinejs/';
+
+      var disqus_title = "如何拥有一个漂亮的故事线";
+
+
+      function run_disqus_script(disqus_script) {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      }
+
+      run_disqus_script('count.js');
+
+      
+        var disqus_config = function () {
+            this.page.url = disqus_url;
+            this.page.identifier = disqus_identifier;
+            this.page.title = disqus_title;
+        };
+        run_disqus_script('embed.js');
+      
+
+    </script>
+  
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

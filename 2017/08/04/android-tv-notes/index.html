@@ -1,0 +1,809 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="Android,Kodi,Youtube,Shadowsocks,TV,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="G2EX" type="application/atom+xml">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0">
+
+
+
+
+
+
+<meta name="description" content="要从 BBC 放出的几段《Planet Earth II》说起，突发奇想地打算在小米电视上看 YouTube 视频，电视的系统基于 Android 6.0.1，最终通过 Kodi + Youtube 插件成功实现目的。 0x00 介绍Kodi 原名 XBMC，是一个开源跨平台的多媒体播放平台，支持视频、音乐、图片、直播、本地和在线媒体、网络服务等等。Kodi 最让人称奇的是它众多的插件，通过对应的">
+<meta name="keywords" content="Android,Kodi,Youtube,Shadowsocks,TV">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android 电视折腾记">
+<meta property="og:url" content="https://g2ex.top/2017/08/04/android-tv-notes/index.html">
+<meta property="og:site_name" content="G2EX">
+<meta property="og:description" content="要从 BBC 放出的几段《Planet Earth II》说起，突发奇想地打算在小米电视上看 YouTube 视频，电视的系统基于 Android 6.0.1，最终通过 Kodi + Youtube 插件成功实现目的。 0x00 介绍Kodi 原名 XBMC，是一个开源跨平台的多媒体播放平台，支持视频、音乐、图片、直播、本地和在线媒体、网络服务等等。Kodi 最让人称奇的是它众多的插件，通过对应的">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/gymgle/imgur/2017-08-04_112344.webp">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/gymgle/imgur/2017-08-04_132530.webp">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/gymgle/imgur/2017-08-04_132531_MITVScreenshot_org.xbmc.kodi.webp">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/gymgle/imgur/2017-08-04_132532_MITVScreenshot_org.xbmc.kodi.webp">
+<meta property="og:updated_time" content="2020-11-25T02:09:19.688Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android 电视折腾记">
+<meta name="twitter:description" content="要从 BBC 放出的几段《Planet Earth II》说起，突发奇想地打算在小米电视上看 YouTube 视频，电视的系统基于 Android 6.0.1，最终通过 Kodi + Youtube 插件成功实现目的。 0x00 介绍Kodi 原名 XBMC，是一个开源跨平台的多媒体播放平台，支持视频、音乐、图片、直播、本地和在线媒体、网络服务等等。Kodi 最让人称奇的是它众多的插件，通过对应的">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/gymgle/imgur/2017-08-04_112344.webp">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://g2ex.top/2017/08/04/android-tv-notes/">
+
+
+
+
+
+  <title> Android 电视折腾记 | G2EX </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?0056c67deccbe6617d059b40d352195f";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">G2EX</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="https://g2ex.top/2017/08/04/android-tv-notes/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="Yaming Gong">
+    <meta itemprop="description" content>
+    <meta itemprop="image" content="/avatar.png">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="G2EX">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="G2EX" src>
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Android 电视折腾记
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-08-04T00:00:00+00:00">
+                2017-08-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <a href="/2017/08/04/android-tv-notes/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/08/04/android-tv-notes/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>要从 BBC 放出的几段《<a href="https://www.youtube.com/playlist?list=PLtra-MWzIvZGdqzuA59Jp0dZVzpmNZyT0" target="_blank" rel="noopener">Planet Earth II</a>》说起，突发奇想地打算在小米电视上看 YouTube 视频，电视的系统基于 Android 6.0.1，最终通过 Kodi + Youtube 插件成功实现目的。</p>
+<h2 id="0x00-介绍"><a href="#0x00-介绍" class="headerlink" title="0x00 介绍"></a>0x00 介绍</h2><p>Kodi 原名 XBMC，是一个开源跨平台的多媒体播放平台，支持视频、音乐、图片、直播、本地和在线媒体、网络服务等等。Kodi 最让人称奇的是它众多的插件，通过对应的插件，网络上的各种资源就可以完美地在 Kodi 中播放。</p>
+<p>不过，在国内，要想观看 YouTube，还要考虑的一个问题是让电视自动翻墙。</p>
+<p>这里以小米电视为例，当然也可以是其他 Android 电视，也可以是各种盒子。</p>
+<h2 id="0x01-让电视科学上网"><a href="#0x01-让电视科学上网" class="headerlink" title="0x01 让电视科学上网"></a>0x01 让电视科学上网</h2><p>有以下选择（前提是你有一台海外 VPS，搭建了 Shadowsocks 服务端，或者是配置了 VPN）：</p>
+<ol>
+<li>家用路由器翻墙。目前用的是小米路由器，需要刷开发版 ROM 获取 root 权限，才能安装 Shadowsocks 客户端实现自动翻墙，比较麻烦；现在小米 WiFi App 可以设置<code>智能 VPN</code>，支持 <code>选择地址限流</code> 和 <code>选择设备限流</code>，如果选择电视限流的话，电视相当于是全局 VPN 了。</li>
+<li>不想折腾路由器的，可以用一台局域网电脑作为家庭代理，安装上 Shadowsocks 和 Privoxy（支持局域网的 SOCKS/http/https 代理）。按照这种思路最好弄个树莓派做家庭代理。</li>
+<li>电视上安装翻墙 App，可选 Shadowsocks 和 Postern。</li>
+</ol>
+<p>这里选择在电视安装 <a href="https://github.com/postern-overwal/postern-stuff" target="_blank" rel="noopener">Postern App</a>。最主要原因是 Postern 的自动翻墙配置利用了 GEOIP 库可以精准地实现「国内流量直连，国外流量走代理」。Shadowsocks 设置里因为用 <code>8.8.8.8</code> DNS（或其他） 去解析域名，国内的某些提供了海外加速的服务就会被解析到国外 IP 上，反而更慢了。另外，Postern 还能在配置里过滤广告。</p>
+<p>具体的过程：</p>
+<ol>
+<li><p>下载 Postern App <a href="https://github.com/postern-overwal/postern-stuff" target="_blank" rel="noopener">https://github.com/postern-overwal/postern-stuff</a></p>
+</li>
+<li><p>下载自动翻墙配置文件 <a href="https://github.com/postern-overwal/postern-stuff/blob/master/postern-rule-geoip.conf" target="_blank" rel="noopener">https://github.com/postern-overwal/postern-stuff/blob/master/postern-rule-geoip.conf</a></p>
+</li>
+<li><p>把配置文件中的代理改为自己的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[Proxy]</span><br><span class="line">Proxy = shadowsocks,xxx.xxx.xxx.xxx,1080,aes-256-cfb,password</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>小米电视的文件浏览器只能看到视频、图片格式的文件，所以要安装一个文件管理器。下载 MiXplorer <a href="https://forum.xda-developers.com/showthread.php?t=1523691" target="_blank" rel="noopener">https://forum.xda-developers.com/showthread.php?t=1523691</a> 也可以使用你习惯的 App。</p>
+</li>
+<li><p>把 Postern、修改的 postern-rule-geoip.conf、MiXplorer 放进 U 盘，插到电视上。在电视上安装 Postern 和 MiXplorer。</p>
+</li>
+<li><p>使用 MiXplorer 把 U 盘里的 postern-rule-geoip.conf 复制到电视内部存储随便一个位置，点击该配置文件，选择使用 Postern 打开，就能把配置文件导入到 Postern 中了。</p>
+</li>
+</ol>
+<blockquote>
+<p>之所以用 MiXplorer 把 U 盘中的配置文件复制到电视内部存储中，是因为在 U 盘中直接打开配置文件，是无法选择使用 Postern 打开的 :(</p>
+</blockquote>
+<blockquote>
+<p>另外，Postern 不仅支持 Shadowsocks，也支持 SSH、SOCKS5、HTTP/HTTPS 代理类型</p>
+</blockquote>
+<h2 id="0x02-安装-Kodi-和插件"><a href="#0x02-安装-Kodi-和插件" class="headerlink" title="0x02 安装 Kodi 和插件"></a>0x02 安装 Kodi 和插件</h2><ol>
+<li><p>去<a href="https://kodi.tv/download" target="_blank" rel="noopener">官网</a>下载 Android 平台下的 Kodi。要根据你电视的 CPU 类型选择，一般来说 ARM 系列比较常见。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/gymgle/imgur/2017-08-04_112344.webp" alt="下载 Kodi"></p>
+</li>
+<li><p>通过 U 盘，在电视上安装 Kodi App。</p>
+</li>
+<li><p>第一次打开 Kodi 界面是英文，如果想切换中文，需要先在 <code>Interface settings</code> 的 <code>Skin</code> 里，把 <code>Fonts</code> 由默认改为 <code>Arial based</code>，否则切换成中文后，中文字体无法显示。然后在 <code>Interface settings</code> 的 <code>Regional</code> 中把 <code>Language</code> 改为 <code>Chinese (Simple)</code>。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/gymgle/imgur/2017-08-04_132530.webp" alt="设置字体"></p>
+</li>
+<li><p>在 Kodi 主界面左侧导航栏，依次点击 <code>插件</code> -&gt; <code>下载</code> -&gt; <code>视频插件</code>，在列表中找到 <code>YouTube</code>，然后点击安装。</p>
+</li>
+<li><p>打开 Postern，在 Kodi 主界面的视频导航栏中，就可以看到视频插件中有刚刚安装的 YouTube 了。点击 <code>Sign in</code> 登录 YouTube，需要电脑上打开 youtube.com/activate 输入 8 个字符的验证码去授权电视上的 YouTube 登录。</p>
+</li>
+<li><p>登录后就可以看到自己 YouTube 账号里的所有视频了，Enjoy~</p>
+<p><img src="https://cdn.jsdelivr.net/gh/gymgle/imgur/2017-08-04_132531_MITVScreenshot_org.xbmc.kodi.webp" alt="Kodi Youtube"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/gymgle/imgur/2017-08-04_132532_MITVScreenshot_org.xbmc.kodi.webp" alt="Kodi Youtube"></p>
+</li>
+</ol>
+<h2 id="0x03-总结"><a href="#0x03-总结" class="headerlink" title="0x03 总结"></a>0x03 总结</h2><p>Kodi 已经可以称作平台级的多媒体工具了，通过插件，还能把玩 Udacity、Vimeo、500px、iPhoto 等等。Kodi 媒体库里能添加本地、家庭路由器硬盘、网络服务中的视频、音乐和图片，也能观看点视直播，可玩性极高。</p>
+<p>常见的智能电视和电视盒子，大部分是基于 Android 系统，只是没有手机的屏幕触碰，只能通过遥控器去点按，操作起来费劲。不过可以用蓝牙鼠标连接电视，操作要方便一些。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+            <a href="/tags/Kodi/" rel="tag"># Kodi</a>
+          
+            <a href="/tags/Youtube/" rel="tag"># Youtube</a>
+          
+            <a href="/tags/Shadowsocks/" rel="tag"># Shadowsocks</a>
+          
+            <a href="/tags/TV/" rel="tag"># TV</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/06/16/fabric-0.6-demo-vedio/" rel="next" title="Fabric 0.6 多节点部署视频演示">
+                <i class="fa fa-chevron-left"></i> Fabric 0.6 多节点部署视频演示
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/09/12/ethereum-guidance/" rel="prev" title="以太坊私有链搭建指南">
+                以太坊私有链搭建指南 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/avatar.png" alt="Yaming Gong">
+          <p class="site-author-name" itemprop="name">Yaming Gong</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">63</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">102</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/gymgle" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://twitter.com/gymgle" target="_blank" title="Twitter">
+                  
+                    <i class="fa fa-fw fa-twitter"></i>
+                  
+                  Twitter
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/773662567" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  Weibo
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.flickr.com/photos/gymgle/" target="_blank" title="Flickr">
+                  
+                    <i class="fa fa-fw fa-flickr"></i>
+                  
+                  Flickr
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+          <div class="cc-license motion-element" itemprop="license">
+            <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" target="_blank">
+              <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons">
+            </a>
+          </div>
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#0x00-介绍"><span class="nav-number">1.</span> <span class="nav-text">0x00 介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x01-让电视科学上网"><span class="nav-number">2.</span> <span class="nav-text">0x01 让电视科学上网</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x02-安装-Kodi-和插件"><span class="nav-number">3.</span> <span class="nav-text">0x02 安装 Kodi 和插件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x03-总结"><span class="nav-number">4.</span> <span class="nav-text">0x03 总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy;  2012 - 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yaming Gong</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+    <script type="text/javascript">
+      var disqus_shortname = 'g2ex';
+      var disqus_identifier = '2017/08/04/android-tv-notes/';
+
+      var disqus_title = "Android 电视折腾记";
+
+
+      function run_disqus_script(disqus_script) {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      }
+
+      run_disqus_script('count.js');
+
+      
+        var disqus_config = function () {
+            this.page.url = disqus_url;
+            this.page.identifier = disqus_identifier;
+            this.page.title = disqus_title;
+        };
+        run_disqus_script('embed.js');
+      
+
+    </script>
+  
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

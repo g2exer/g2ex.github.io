@@ -1,0 +1,804 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="Android,NFC,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="G2EX" type="application/atom+xml">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0">
+
+
+
+
+
+
+<meta name="description" content="本文总结Android NFC开发的一般过程，最开始介绍几个概念，然后介绍NFC事件的调度过程，最后通过示例代码说明如何进行NFC开发。至于Android NFC P2P模式开发、模拟卡开发请阅读赵波编著的《Android NFC开发实战详解》。 一、Android NFC 开发中的几个类NfcManager：用来管理Android设备中所有NFC Adapter。因为大部分Android设备只支">
+<meta name="keywords" content="Android,NFC">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android NFC 开发简介与示例">
+<meta property="og:url" content="https://g2ex.top/2016/02/18/Android-NFC-Program/index.html">
+<meta property="og:site_name" content="G2EX">
+<meta property="og:description" content="本文总结Android NFC开发的一般过程，最开始介绍几个概念，然后介绍NFC事件的调度过程，最后通过示例代码说明如何进行NFC开发。至于Android NFC P2P模式开发、模拟卡开发请阅读赵波编著的《Android NFC开发实战详解》。 一、Android NFC 开发中的几个类NfcManager：用来管理Android设备中所有NFC Adapter。因为大部分Android设备只支">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-11-25T02:09:19.688Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android NFC 开发简介与示例">
+<meta name="twitter:description" content="本文总结Android NFC开发的一般过程，最开始介绍几个概念，然后介绍NFC事件的调度过程，最后通过示例代码说明如何进行NFC开发。至于Android NFC P2P模式开发、模拟卡开发请阅读赵波编著的《Android NFC开发实战详解》。 一、Android NFC 开发中的几个类NfcManager：用来管理Android设备中所有NFC Adapter。因为大部分Android设备只支">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://g2ex.top/2016/02/18/Android-NFC-Program/">
+
+
+
+
+
+  <title> Android NFC 开发简介与示例 | G2EX </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?0056c67deccbe6617d059b40d352195f";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">G2EX</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="https://g2ex.top/2016/02/18/Android-NFC-Program/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="Yaming Gong">
+    <meta itemprop="description" content>
+    <meta itemprop="image" content="/avatar.png">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="G2EX">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="G2EX" src>
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Android NFC 开发简介与示例
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-02-18T18:00:00+00:00">
+                2016-02-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <a href="/2016/02/18/Android-NFC-Program/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2016/02/18/Android-NFC-Program/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本文总结Android NFC开发的一般过程，最开始介绍几个概念，然后介绍NFC事件的调度过程，最后通过示例代码说明如何进行NFC开发。至于Android NFC P2P模式开发、模拟卡开发请阅读赵波编著的《Android NFC开发实战详解》。</p>
+<h2 id="一、Android-NFC-开发中的几个类"><a href="#一、Android-NFC-开发中的几个类" class="headerlink" title="一、Android NFC 开发中的几个类"></a>一、Android NFC 开发中的几个类</h2><p><code>NfcManager</code>：用来管理Android设备中所有NFC Adapter。因为大部分Android设备只支持一个NFC Adapter，因此可以直接使用getDefaultAdapter来获取系统的NfcAdapter。</p>
+<p><code>NfcAdapter</code>：手机的NFC硬件设备，更专业的称呼是NFC适配器。该类可以用来定义一个Intent使系统在检测到NFC Tag时通知用户定义的Activity，并提供用来注册Foreground Tag消息发送的方法等。如果不清楚<code>Tag</code>和<code>Foreground</code>是什么，请继续往下看。</p>
+<p><code>Tag</code>：代表一个被动式NFC对象，比如一张公交卡，Tag可以理解成能被手机NFC读写的对象。当Android检测到一个Tag时，会创建一个Tag对象，将其放在Intent对象中，然后发送到相应的Activity。</p>
+<p><code>IsoDep</code>：该类位于<code>android.nfc.tech.IsoDep</code>包中，是支持ISO-DEP（ISO 14443-4）协议Tag的操作类。NFC协议众多，其他的协议就要用到其他类了。常见的还有：</p>
+<ul>
+<li><code>MifareClassic</code>类：支持Mifare Classic协议</li>
+<li><code>MifareUltralight</code>类：支持Mifare Ultralight协议</li>
+<li><code>Ndef</code>类和<code>NdefFormatable</code>类：支持NDEF格式</li>
+<li><code>NfcA</code>类：支持NFC-A（ISO-14443-3A）协议</li>
+<li><code>NfcB</code>类：支持NFC-B（ISO-14443-3B）协议</li>
+<li><code>NfcF</code>类：支持NFC-F（JIS 6319-4）协议</li>
+<li><code>NfcV</code>类：支持NFC-V（ISO 15693）协议</li>
+<li>等等</li>
+</ul>
+<h2 id="二、NFC调度系统"><a href="#二、NFC调度系统" class="headerlink" title="二、NFC调度系统"></a>二、NFC调度系统</h2><p>NFC调度是指手机检测到NFC对象后如何处理，调度系统分为前台调度系统（Foreground Dispatch System）和标签调度系统（NFC Tag Dispatch System）。</p>
+<h3 id="1-前台调度系统"><a href="#1-前台调度系统" class="headerlink" title="1) 前台调度系统"></a>1) 前台调度系统</h3><p>NFC前台调度系统是一种用于在运行的程序中（前台呈现的Activity）处理Tag的技术，即前台调度系统允许Activity拦截Intent对象，并且声明该Activity的优先级比其他的处理Intent对象的Activity高。前台调度系统在一些涉及需要在前台呈现的页面中直接获取或推送NFC信息时十分方便。本文的示例就是使用前台调度。</p>
+<p>前台调度的使用方法如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 创建一个PendingIntent对象，以便Android系统能够在扫描到NFC标签时，用它来封装NFC标签的详细信息</span></span><br><span class="line">PendingIntent pendingIntent = PendingIntent.getActivity(<span class="keyword">this</span>, <span class="number">0</span>, <span class="keyword">new</span> Intent(<span class="keyword">this</span>, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 创建Intent过滤器</span></span><br><span class="line">IntentFilter iso = <span class="keyword">new</span> IntentFilter(NfcAdapter.ACTION_TECH_DISCOVERED);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 创建一个处理NFC标签技术的数组</span></span><br><span class="line">String[][] techLists = <span class="keyword">new</span> String[][]&#123;<span class="keyword">new</span> String[]&#123;IsoDep<span class="class">.<span class="keyword">class</span>.<span class="title">getName</span>()&#125;&#125;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 在主线程中调用enableForegroundDispatch()方法，一旦NFC标签接触到手机，这个方法就会被激活</span></span><br><span class="line">adapter.enableForegroundDispatch(<span class="keyword">this</span>, pendingIntent, <span class="keyword">new</span> IntentFilter[]&#123;iso&#125;, techLists);</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-标签调度系统"><a href="#2-标签调度系统" class="headerlink" title="2) 标签调度系统"></a>2) 标签调度系统</h3><p>NFC标签调度系统是一种通过预先定义好的Tag或NDEF消息来启动应用程序的机制，当扫描到一个NFC Tag时，如果Intent中注册对应的App，那么在处理该Tag信息时就会启动该App。当存在多个可以处理该Tag信息的Apps时，系统会弹出一个Activity Choose，供用户选择开启哪个应用。标签调度系统定义了3种Intent对象，按照优先级由高到低分别为<code>ACTION_NDEF_DISCOVERED</code>、<code>ACTION_TECH_DISCOVERED</code>、<code>ACTION_TAB_DISCOVERED</code>。</p>
+<p>标签调度的基本工作方法如下：</p>
+<ul>
+<li>用解析NFC标签时由标签调度系统创建的Intent对象（<code>ACTION_NDEF_DISCOVERED</code>）来尝试启动Activity。</li>
+<li>如果没有对应的处理Intent的Activity，就会尝试使用下一个优先级的Intent（<code>ACTION_TECH_DISCOVERED</code>，继而<code>ACTION_TAG_DISCOVERED</code>）来启动Activity，直到有对应的App来处理这个Intent，或者是直接标签调度系统尝试了所有可能的Intent。</li>
+<li>如果没有应用程序来处理任何类型的Intent，就不做任何事情。</li>
+</ul>
+<h2 id="三、Android-NFC-编程示例"><a href="#三、Android-NFC-编程示例" class="headerlink" title="三、Android NFC 编程示例"></a>三、Android NFC 编程示例</h2><p>一般的非接触智能卡如公交卡都支持取随机数命令，该示例实现通过NFC获取随机数的功能。操作智能卡的NFC协议使用<code>IsoDep</code>。</p>
+<p>示例主要有两个类，与NFC对象的交互类<code>NFC.java</code>，处理NFC调度的<code>MainActivity.java</code>。源码在文章最后可以下载。</p>
+<h3 id="1-编写与NFC对象的交互类"><a href="#1-编写与NFC对象的交互类" class="headerlink" title="1) 编写与NFC对象的交互类"></a>1) 编写与NFC对象的交互类</h3><p>最开始，我们需要定义自己的<code>NFC类</code>，在该类中定义获取随机数的APDU命令，在构造函数中初始化ISO-DEP协议的Tag操作类实例，在<code>send()</code>方法中发送和接收APDU。<code>NFC类</code>实现如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">NFC</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 获取随机数的APDU命令</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">byte</span>[] GET_RANDOM = &#123;<span class="number">0x00</span>, (<span class="keyword">byte</span>)<span class="number">0x84</span>, <span class="number">0x00</span>, <span class="number">0x00</span>, <span class="number">0x08</span>&#125;;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 声明ISO-DEP协议的Tag操作实例</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> IsoDep tag;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">NFC</span><span class="params">(IsoDep tag)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        <span class="comment">// 初始化ISO-DEP协议的Tag操作类实例</span></span><br><span class="line">        <span class="keyword">this</span>.tag = tag;</span><br><span class="line">        tag.setTimeout(<span class="number">5000</span>);</span><br><span class="line">        tag.connect();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 向Tag发送获取随机数的APDU并返回Tag响应</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> 十六进制随机数字符串</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> IOException</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> APDUError</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">send</span><span class="params">()</span> <span class="keyword">throws</span> IOException, APDUError </span>&#123;</span><br><span class="line">        <span class="comment">// 发送APDU命令</span></span><br><span class="line">        <span class="keyword">byte</span>[] resp = tag.transceive(GET_RANDOM);</span><br><span class="line">        String strResp =  <span class="keyword">new</span> String(Hex.encodeHex(resp));</span><br><span class="line">        Log.d(<span class="string">"REQ "</span>, <span class="keyword">new</span> String(Hex.encodeHex(GET_RANDOM)));</span><br><span class="line">        Log.d(<span class="string">"RESP"</span>, <span class="keyword">new</span> String(Hex.encodeHex(resp)));</span><br><span class="line">        <span class="comment">// 获取NFC Tag返回的状态值</span></span><br><span class="line">        <span class="keyword">int</span> status = ((<span class="number">0xff</span> &amp; resp[resp.length - <span class="number">2</span>]) &lt;&lt; <span class="number">8</span>) | (<span class="number">0xff</span> &amp; resp[resp.length - <span class="number">1</span>]);</span><br><span class="line">        <span class="keyword">if</span> (status != <span class="number">0x9000</span>) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> APDUError(status);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> strResp;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-NFC调度的实现"><a href="#2-NFC调度的实现" class="headerlink" title="2) NFC调度的实现"></a>2) NFC调度的实现</h3><p>在MainActivity中编写以下代码。</p>
+<p>① 获取NfcAdapter，可以在onCreate()方法中实现。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">adapter = NfcAdapter.getDefaultAdapter(getApplicationContext());</span><br></pre></td></tr></table></figure>
+
+<p>② 构造PendingInent对象封装NFC标签信息，②-⑤步骤都可以在onResume()方法中实现。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">PendingIntent pendingIntent = PendingIntent.getActivity(<span class="keyword">this</span>, <span class="number">0</span>,</span><br><span class="line">                <span class="keyword">new</span> Intent(<span class="keyword">this</span>, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), <span class="number">0</span>);</span><br></pre></td></tr></table></figure>
+
+<p>③ 声明Intent对象的过滤器。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">IntentFilter iso = <span class="keyword">new</span> IntentFilter(NfcAdapter.ACTION_TECH_DISCOVERED);</span><br></pre></td></tr></table></figure>
+
+<p>④ 建立一个处理NFC标签技术的数组。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">String[][] techLists = <span class="keyword">new</span> String[][]&#123;<span class="keyword">new</span> String[]&#123;IsoDep<span class="class">.<span class="keyword">class</span>.<span class="title">getName</span>()&#125;&#125;</span>;</span><br></pre></td></tr></table></figure>
+
+<p>⑤ 调用enableForegroundDispatch()方法。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">adapter.enableForegroundDispatch(<span class="keyword">this</span>, pendingIntent, <span class="keyword">new</span> IntentFilter[]&#123;iso&#125;, techLists);</span><br></pre></td></tr></table></figure>
+
+<p>⑥ 在onPause()方法中调用disableForegroundDispatch()方法当Activity挂起时禁用前台调用。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">adapter.disableForegroundDispatch(<span class="keyword">this</span>);</span><br></pre></td></tr></table></figure>
+
+<p>⑦ 最后在onNewIntent()方法中处理Intent回调给我们的信息。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onNewIntent</span><span class="params">(Intent intent)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">super</span>.onNewIntent(intent);</span><br><span class="line">    Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);</span><br><span class="line">    <span class="keyword">if</span>(tag != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            NFC nfc = <span class="keyword">new</span> NFC(IsoDep.get(tag));</span><br><span class="line">            <span class="comment">// 发送取随机数APDU命令</span></span><br><span class="line">            String resp = nfc.send();</span><br><span class="line">            <span class="comment">// TextView中显示APDU响应</span></span><br><span class="line">            ((TextView) findViewById(R.id.result)).setText(resp);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (APDUError apduError) &#123;</span><br><span class="line">            Toast.makeText(getApplicationContext(), apduError.getMessage(), Toast.LENGTH_LONG).show();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            findViewById(R.id.progressBar).setVisibility(View.INVISIBLE);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="四、源码下载"><a href="#四、源码下载" class="headerlink" title="四、源码下载"></a>四、源码下载</h2><p>程序在Android Studio 1.5.1中编写并测试通过。源码链接： <a href="http://pan.baidu.com/s/1hrjprZQ" target="_blank" rel="noopener">http://pan.baidu.com/s/1hrjprZQ</a> 密码: 29tb</p>
+<h2 id="五、参考内容"><a href="#五、参考内容" class="headerlink" title="五、参考内容"></a>五、参考内容</h2><ol>
+<li>《Android NFC开发实战详解》赵波 第四章</li>
+<li><a href="http://www.jianshu.com/p/7991dc02b0d8" target="_blank" rel="noopener">http://www.jianshu.com/p/7991dc02b0d8</a></li>
+</ol>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+            <a href="/tags/NFC/" rel="tag"># NFC</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2015/11/19/Post-from-Android-App-to-Flask-Server/" rel="next" title="Android App与Flask通信实例：POST数据的发送与处理">
+                <i class="fa fa-chevron-left"></i> Android App与Flask通信实例：POST数据的发送与处理
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/03/15/Domain-Name-Updated/" rel="prev" title="域名更新">
+                域名更新 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/avatar.png" alt="Yaming Gong">
+          <p class="site-author-name" itemprop="name">Yaming Gong</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">63</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">102</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/gymgle" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://twitter.com/gymgle" target="_blank" title="Twitter">
+                  
+                    <i class="fa fa-fw fa-twitter"></i>
+                  
+                  Twitter
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/773662567" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  Weibo
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.flickr.com/photos/gymgle/" target="_blank" title="Flickr">
+                  
+                    <i class="fa fa-fw fa-flickr"></i>
+                  
+                  Flickr
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+          <div class="cc-license motion-element" itemprop="license">
+            <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" target="_blank">
+              <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons">
+            </a>
+          </div>
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、Android-NFC-开发中的几个类"><span class="nav-number">1.</span> <span class="nav-text">一、Android NFC 开发中的几个类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、NFC调度系统"><span class="nav-number">2.</span> <span class="nav-text">二、NFC调度系统</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-前台调度系统"><span class="nav-number">2.1.</span> <span class="nav-text">1) 前台调度系统</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-标签调度系统"><span class="nav-number">2.2.</span> <span class="nav-text">2) 标签调度系统</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、Android-NFC-编程示例"><span class="nav-number">3.</span> <span class="nav-text">三、Android NFC 编程示例</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-编写与NFC对象的交互类"><span class="nav-number">3.1.</span> <span class="nav-text">1) 编写与NFC对象的交互类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-NFC调度的实现"><span class="nav-number">3.2.</span> <span class="nav-text">2) NFC调度的实现</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#四、源码下载"><span class="nav-number">4.</span> <span class="nav-text">四、源码下载</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#五、参考内容"><span class="nav-number">5.</span> <span class="nav-text">五、参考内容</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy;  2012 - 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yaming Gong</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+    <script type="text/javascript">
+      var disqus_shortname = 'g2ex';
+      var disqus_identifier = '2016/02/18/Android-NFC-Program/';
+
+      var disqus_title = "Android NFC 开发简介与示例";
+
+
+      function run_disqus_script(disqus_script) {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      }
+
+      run_disqus_script('count.js');
+
+      
+        var disqus_config = function () {
+            this.page.url = disqus_url;
+            this.page.identifier = disqus_identifier;
+            this.page.title = disqus_title;
+        };
+        run_disqus_script('embed.js');
+      
+
+    </script>
+  
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

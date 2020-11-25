@@ -1,0 +1,815 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="Python,Scrapy,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="G2EX" type="application/atom+xml">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0">
+
+
+
+
+
+
+<meta name="description" content="以下是最近写爬虫使用Scrapy的一些笔记。 关于ScrapyScrapy官网：http://scrapy.org/ Scrapy中文文档：http://scrapy-chs.readthedocs.org/zh_CN/latest/ urllib和urllib2调试设置要想看到urllib的调试状态，需要设置httplib的debuglevel： 123import urllib, httpli">
+<meta name="keywords" content="Python,Scrapy">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Scrapy笔记">
+<meta property="og:url" content="https://g2ex.top/2014/12/26/Scrapy-Notes/index.html">
+<meta property="og:site_name" content="G2EX">
+<meta property="og:description" content="以下是最近写爬虫使用Scrapy的一些笔记。 关于ScrapyScrapy官网：http://scrapy.org/ Scrapy中文文档：http://scrapy-chs.readthedocs.org/zh_CN/latest/ urllib和urllib2调试设置要想看到urllib的调试状态，需要设置httplib的debuglevel： 123import urllib, httpli">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-11-25T02:09:19.684Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Scrapy笔记">
+<meta name="twitter:description" content="以下是最近写爬虫使用Scrapy的一些笔记。 关于ScrapyScrapy官网：http://scrapy.org/ Scrapy中文文档：http://scrapy-chs.readthedocs.org/zh_CN/latest/ urllib和urllib2调试设置要想看到urllib的调试状态，需要设置httplib的debuglevel： 123import urllib, httpli">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://g2ex.top/2014/12/26/Scrapy-Notes/">
+
+
+
+
+
+  <title> Scrapy笔记 | G2EX </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?0056c67deccbe6617d059b40d352195f";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">G2EX</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="https://g2ex.top/2014/12/26/Scrapy-Notes/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="Yaming Gong">
+    <meta itemprop="description" content>
+    <meta itemprop="image" content="/avatar.png">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="G2EX">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="G2EX" src>
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Scrapy笔记
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2014-12-26T00:00:00+00:00">
+                2014-12-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <a href="/2014/12/26/Scrapy-Notes/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2014/12/26/Scrapy-Notes/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>以下是最近写爬虫使用Scrapy的一些笔记。</p>
+<h2 id="关于Scrapy"><a href="#关于Scrapy" class="headerlink" title="关于Scrapy"></a>关于Scrapy</h2><p>Scrapy官网：<a href="http://scrapy.org/" target="_blank" rel="noopener">http://scrapy.org/</a></p>
+<p>Scrapy中文文档：<a href="http://scrapy-chs.readthedocs.org/zh_CN/latest/" target="_blank" rel="noopener">http://scrapy-chs.readthedocs.org/zh_CN/latest/</a></p>
+<h2 id="urllib和urllib2调试设置"><a href="#urllib和urllib2调试设置" class="headerlink" title="urllib和urllib2调试设置"></a>urllib和urllib2调试设置</h2><p>要想看到urllib的调试状态，需要设置httplib的debuglevel：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> urllib, httplib</span><br><span class="line">httplib.HTTPConnection.debuglevel = <span class="number">1</span></span><br><span class="line">response = urllib.urlopen(<span class="string">"http://wap.shouji.com.cn/wap/wdown/softversion?id=43432"</span>)</span><br></pre></td></tr></table></figure>
+
+<p>可以看到这样的输出：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">send: 'GET /wap/wdown/softversion?id=43432 HTTP/1.0\r\nHost: wap.shouji.com.cn\r\nUser-Agent: Python-urllib/1.17\r\n\r\n'</span><br><span class="line">reply: 'HTTP/1.1 200 OK\r\n'</span><br><span class="line">header: Server: nginx</span><br><span class="line">header: Date: Thu, 27 Nov 2014 04:07:38 GMT</span><br><span class="line">header: Connection: close</span><br><span class="line">header: Cache-Control: no-cache</span><br><span class="line">header: Expires: Thu, 01 Dec 1994 16:00:00 GMT</span><br><span class="line">header: Set-Cookie: JSESSIONID=abc3a8cR57Ob5fBwaBVNu; path=/</span><br><span class="line">header: Content-Length: 0</span><br><span class="line">header: X-Cache: MISS from alicdn.shouji.com.cn</span><br></pre></td></tr></table></figure>
+
+<p>urllib2开启调试的方法：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> urllib2</span><br><span class="line">httpHandler = urllib2.HTTPHandler(debuglevel=<span class="number">1</span>)</span><br><span class="line">httpsHandler = urllib2.HTTPSHandler(debuglevel=<span class="number">1</span>)</span><br><span class="line">opener = urllib2.build_opener(httpHandler, httpsHandler)</span><br><span class="line">urllib2.install_opener(opener)</span><br><span class="line">response = urllib2.urlopen(<span class="string">"http://xxx.xx/xx"</span>)</span><br></pre></td></tr></table></figure>
+
+<p>在Python2.7中，urllib与urllib2提供的功能不同，最显著的两个不同是：</p>
+<ol>
+<li>urllib2可以接受一个Request类的实例来设置URL请求的headers，urllib仅可以接受URL。这意味着，你不可以伪装你的User Agent字符串等。</li>
+<li>urllib提供urlencode方法用来GET查询字符串的产生，而urllib2没有。这是为何urllib常和urllib2一起使用的原因。</li>
+</ol>
+<h2 id="指定Scrapy的Referer"><a href="#指定Scrapy的Referer" class="headerlink" title="指定Scrapy的Referer"></a>指定Scrapy的Referer</h2><p>在<code>settings.py</code>文件中添加：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">DEFAULT_REQUEST_HEADERS = &#123;</span><br><span class="line">    'Referer': 'http://www.google.com'</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="获取302重定向后的URL"><a href="#获取302重定向后的URL" class="headerlink" title="获取302重定向后的URL"></a>获取302重定向后的URL</h2><p>网页中的一些下载链接是这种类型的：<a href="http://abc.com/xxx?xxx" target="_blank" rel="noopener">http://abc.com/xxx?xxx</a> 点击后会跳转到真实的下载链接，这个跳转的过程大多数是临时重定向的过程，HTTP状态码为302。</p>
+<p>urllib2能够处理HTTP的301、302重定向网页，使用<code>geturl()</code>方法：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">link = <span class="string">"http://resget.91.com/Soft/Controller.ashx?action=download&amp;tpl=1&amp;id=41033355"</span></span><br><span class="line">response = urllib2.urlopen(link)</span><br><span class="line">dllink = response.geturl()</span><br><span class="line"><span class="keyword">print</span> dllink</span><br></pre></td></tr></table></figure>
+
+<p>输出结果是真实的下载地址：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://bcs.apk.r1.91.com/data/upload/2014/10_01/20/com.chinamworld.main_200333.apk</span><br></pre></td></tr></table></figure>
+
+<h2 id="Scrapy的Item"><a href="#Scrapy的Item" class="headerlink" title="Scrapy的Item"></a>Scrapy的Item</h2><p>这是Scrapy例子中的爬虫类：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DmozSpider</span><span class="params">(Spider)</span>:</span></span><br><span class="line">    name = <span class="string">"dmoz"</span></span><br><span class="line">    allowed_domains = [<span class="string">"dmoz.org"</span>]</span><br><span class="line">    start_urls = [</span><br><span class="line">        <span class="string">"http://www.dmoz.org/Computers/Programming/Languages/Python/Books/"</span>,</span><br><span class="line">        <span class="string">"http://www.dmoz.org/Computers/Programming/Languages/Python/Resources/"</span>,</span><br><span class="line">    ]</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">parse</span><span class="params">(self, response)</span>:</span></span><br><span class="line">        sel = Selector(response)</span><br><span class="line">        sites = sel.xpath(<span class="string">'//ul[@class="directory-url"]/li'</span>)</span><br><span class="line">        items = []</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> site <span class="keyword">in</span> sites:</span><br><span class="line">            item = Website()</span><br><span class="line">            item[<span class="string">'name'</span>] = site.xpath(<span class="string">'a/text()'</span>).extract()</span><br><span class="line">            item[<span class="string">'url'</span>] = site.xpath(<span class="string">'a/@href'</span>).extract()</span><br><span class="line">            item[<span class="string">'description'</span>] = site.xpath(<span class="string">'text()'</span>).re(<span class="string">'-\s[^\n]*\\r'</span>)</span><br><span class="line">            items.append(item)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> items</span><br></pre></td></tr></table></figure>
+
+<p>在爬虫类的parse()方法中，返回的items是这种类型的字典：{‘name’: [‘xxx’], ‘url’: [‘xxx’], ‘description’: [‘xxx’]}，字典中元素的值是列表的形式。因此想要在<code>piplines.py</code>中处理item的元素，需要将元素的值按照列表的方法处理。比如，要想以<code>utf-8</code>编码输出：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">print</span> <span class="string">""</span>.join(item[<span class="string">"name"</span>]).encode(<span class="string">'utf-8'</span>)</span><br><span class="line"><span class="keyword">print</span> <span class="string">""</span>.join(item[<span class="string">"url"</span>]).encode(<span class="string">'utf-8'</span>)</span><br><span class="line"><span class="keyword">print</span> <span class="string">""</span>.join(item[<span class="string">"description"</span>]).encode(<span class="string">'utf-8'</span>)</span><br></pre></td></tr></table></figure>
+
+<h2 id="判断第三方市场的APK是否正版"><a href="#判断第三方市场的APK是否正版" class="headerlink" title="判断第三方市场的APK是否正版"></a>判断第三方市场的APK是否正版</h2><p>原思路：先从官网下载正版APK，计算并记录该APK的MD5等信息。然后从第三方市场使用<code>urllib</code>的<code>urlretrieve()</code>方法下载APK，计算其MD5值是否同正版的MD5相同。<br>缺点：每次都要从第三方市场下载APK后才能计算其MD5，如果APK很大，下载耗时，网络带宽浪费严重。</p>
+<p>新思路：不下载APK的情况下取其MD5值。<br>实现原理：使用urllib.urlopen()返回的response的<code>info()</code>方法，<code>info()</code>中包含了多个字段，其中一项就有资源的MD5值，字段名为：<code>Content-MD5</code>。代码示例如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> urllib</span><br><span class="line"></span><br><span class="line"><span class="comment"># 该链接为百度手机助手中招商银行3.0.1的下载链接</span></span><br><span class="line">dllink = <span class="string">"http://gdown.baidu.com/data/wisegame/24796ec9b5284d40/zhaoshangyinxing_301.apk"</span></span><br><span class="line">response = urllib.urlopen(dllink)</span><br><span class="line">headers = response.info()</span><br><span class="line"><span class="keyword">print</span> headers</span><br></pre></td></tr></table></figure>
+
+<p>输出如下：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">Server: JSP3/2.0.4</span><br><span class="line">Date: Thu, 04 Dec 2014 08:58:28 GMT</span><br><span class="line">Content-Type: application/vnd.android.package-archive</span><br><span class="line">Content-Length: 4964681</span><br><span class="line">Connection: close</span><br><span class="line">ETag: b21e117b24796ec9b5284d40d88c1976</span><br><span class="line">Last-Modified: Fri, 28 Nov 2014 07:17:36 GMT</span><br><span class="line">Expires: Thu, 04 Dec 2014 09:26:00 GMT</span><br><span class="line">Age: 257312</span><br><span class="line">Accept-Ranges: bytes</span><br><span class="line">x-bs-version: 04FD2F39E44F0C2C1C44179DD633BA21</span><br><span class="line">x-bs-request-id: MTAuNDIuMTMzLjU4OjgwODA6Mzg5NTYxMDc2OToyOC9Ob3YvMjAxNCAxNzoyNTozMCA=</span><br><span class="line">x-bs-meta-crc32: 3911572026</span><br><span class="line">Content-MD5: b21e117b24796ec9b5284d40d88c1976</span><br><span class="line">x-bs-client-ip: MjcuMjIxLjQwLjE1NQ==</span><br></pre></td></tr></table></figure>
+
+<p>通过下载验证，<code>Content-MD5</code>字段就是该apk文件的MD5值，<code>Content-Length</code>字段是该apk文件的大小（bytes），<code>x-bs-meta-crc32</code>字段是该apk文件的CRC32校验码（十进制表示）。另外，在这里urllib也可以换为urllib2，得到的结果相同。</p>
+<p>大多数情况下，使用urllib2请求APK文件的下载链接时都会返回<code>Content-MD5</code>字段，但是也有例外。所以在获取其MD5之前要进行一次判断，看headers.has_key(“Content-MD5”)返回True还是False。</p>
+<h2 id="MySQLdb操作中的错误"><a href="#MySQLdb操作中的错误" class="headerlink" title="MySQLdb操作中的错误"></a>MySQLdb操作中的错误</h2><h3 id="问题1"><a href="#问题1" class="headerlink" title="问题1"></a>问题1</h3><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">TypeError: %d format: a number is required, not str</span><br></pre></td></tr></table></figure>
+
+<p>解决办法：MySQL里不需要对对应的变量写%d,只写%s就可以了</p>
+<h3 id="问题2"><a href="#问题2" class="headerlink" title="问题2"></a>问题2</h3><p>当执行以下代码时：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cur.execute(<span class="string">"create table test(id int(2) not null primary key auto_increment, name varchar(40)) default charset=utf8"</span>)</span><br></pre></td></tr></table></figure>
+
+<p>如果表test存在，会出现警告：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Warning: Table 'test' already exists</span><br></pre></td></tr></table></figure>
+
+<p>解决办法：其实这只是个警告，不是错误。可以通过设置<code>sql_notes</code>忽略这个警告：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">SET sql_notes = <span class="number">0</span>;      -- Temporarily disable the <span class="string">"Table already exists"</span> warning</span><br><span class="line">CREATE TABLE IF NOT EXISTS ...</span><br><span class="line">SET sql_notes = <span class="number">1</span>;      -- And then re-enable the warning again</span><br></pre></td></tr></table></figure>
+
+<p>但是，最好的办法不是忽略警告，而是解决警告：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>:</span><br><span class="line">    conn = MySQLdb.connect(host=<span class="string">"localhost"</span>,user=<span class="string">"root"</span>,passwd=<span class="string">"1234"</span>,db=<span class="string">"test"</span>,port=<span class="number">3306</span>,charset=<span class="string">"utf8"</span>)</span><br><span class="line">    cur = conn.cursor()</span><br><span class="line">    cur.execute(<span class="string">"show tables"</span>)</span><br><span class="line">    rows = cur.fetchall()</span><br><span class="line">    <span class="keyword">if</span> (<span class="string">u'test'</span>,) <span class="keyword">in</span> rows:</span><br><span class="line">        <span class="comment"># test already exists</span></span><br><span class="line">        <span class="keyword">print</span> <span class="string">"Table 'test' already exists."</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="comment"># Create table test</span></span><br><span class="line">        cur.execute(<span class="string">"create table test(id int(2) not null primary key auto_increment, name varchar(40)) default charset=utf8"</span>)</span><br><span class="line"><span class="keyword">finally</span>:</span><br><span class="line">    conn.commit()</span><br><span class="line">    <span class="keyword">if</span> conn:</span><br><span class="line">        cur.close()</span><br><span class="line">        conn.close()</span><br></pre></td></tr></table></figure>
+
+<h2 id="使用LAMPP中的MySQL服务"><a href="#使用LAMPP中的MySQL服务" class="headerlink" title="使用LAMPP中的MySQL服务"></a>使用LAMPP中的MySQL服务</h2><p>Ubuntu中安装了LAMPP，在Scrapy中使用MySQLdb时，提示找不到<code>mysqld.sock</code>：</p>
+<blockquote>
+<p>“Can’t connect to local MySQL server through socket ‘/var/run/mysqld/mysqld.sock’ (2)”</p>
+</blockquote>
+<p>这是因为LAMPP中MySQL的<code>mysqld.sock</code>不在<code>/var/run/mysqld/</code>目录中，而是位于<code>/opt/lampp/var/mysql/</code>目录下，名字是<code>mysql.sock</code>（注意，少一个<code>d</code>，不是<code>mysqld.sock</code>）。当然我们可以使用<code>find</code>命令来查找一下<code>*.sock</code>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo find /opt/lampp -name <span class="string">"*.sock"</span></span><br></pre></td></tr></table></figure>
+
+<p>可以看到<code>mysql.sock</code>的位置：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/opt/lampp/var/mysql/mysql.sock</span><br></pre></td></tr></table></figure>
+
+<p>解决办法：建立一个’/var/run/mysqld/mysqld.sock’指向’/opt/lampp/var/mysql/mysql.sock’的软连接：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">cd</span> /var/run</span><br><span class="line">$ sudo mkdir mysqld <span class="comment"># 先创建mysqld文件夹</span></span><br><span class="line">$ <span class="built_in">cd</span> mysqld</span><br><span class="line">$ sudo ln -s /opt/lampp/var/mysql/mysql.sock mysqld.sock</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Python/" rel="tag"># Python</a>
+          
+            <a href="/tags/Scrapy/" rel="tag"># Scrapy</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2014/12/01/Basic-Python-Notes/" rel="next" title="Python基础笔记">
+                <i class="fa fa-chevron-left"></i> Python基础笔记
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2015/01/18/Android-Ndk-Notes/" rel="prev" title="Android NDK开发笔记">
+                Android NDK开发笔记 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/avatar.png" alt="Yaming Gong">
+          <p class="site-author-name" itemprop="name">Yaming Gong</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">63</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">102</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/gymgle" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://twitter.com/gymgle" target="_blank" title="Twitter">
+                  
+                    <i class="fa fa-fw fa-twitter"></i>
+                  
+                  Twitter
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/773662567" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  Weibo
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.flickr.com/photos/gymgle/" target="_blank" title="Flickr">
+                  
+                    <i class="fa fa-fw fa-flickr"></i>
+                  
+                  Flickr
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+          <div class="cc-license motion-element" itemprop="license">
+            <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" target="_blank">
+              <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons">
+            </a>
+          </div>
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#关于Scrapy"><span class="nav-number">1.</span> <span class="nav-text">关于Scrapy</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#urllib和urllib2调试设置"><span class="nav-number">2.</span> <span class="nav-text">urllib和urllib2调试设置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#指定Scrapy的Referer"><span class="nav-number">3.</span> <span class="nav-text">指定Scrapy的Referer</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#获取302重定向后的URL"><span class="nav-number">4.</span> <span class="nav-text">获取302重定向后的URL</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Scrapy的Item"><span class="nav-number">5.</span> <span class="nav-text">Scrapy的Item</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#判断第三方市场的APK是否正版"><span class="nav-number">6.</span> <span class="nav-text">判断第三方市场的APK是否正版</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MySQLdb操作中的错误"><span class="nav-number">7.</span> <span class="nav-text">MySQLdb操作中的错误</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#问题1"><span class="nav-number">7.1.</span> <span class="nav-text">问题1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#问题2"><span class="nav-number">7.2.</span> <span class="nav-text">问题2</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用LAMPP中的MySQL服务"><span class="nav-number">8.</span> <span class="nav-text">使用LAMPP中的MySQL服务</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy;  2012 - 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yaming Gong</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+    <script type="text/javascript">
+      var disqus_shortname = 'g2ex';
+      var disqus_identifier = '2014/12/26/Scrapy-Notes/';
+
+      var disqus_title = "Scrapy笔记";
+
+
+      function run_disqus_script(disqus_script) {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      }
+
+      run_disqus_script('count.js');
+
+      
+        var disqus_config = function () {
+            this.page.url = disqus_url;
+            this.page.identifier = disqus_identifier;
+            this.page.title = disqus_title;
+        };
+        run_disqus_script('embed.js');
+      
+
+    </script>
+  
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

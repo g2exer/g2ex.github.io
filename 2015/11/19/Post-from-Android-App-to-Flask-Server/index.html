@@ -1,0 +1,793 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="Android,Python,Flask,POST,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="G2EX" type="application/atom+xml">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0">
+
+
+
+
+
+
+<meta name="description" content="一、说明在Android开发中，当应用需要向服务器提交数据数据时，可以使用POST方式向服务器提交form表单。服务器端框架有多种选择，快速开发可以使用Python的Flask框架。本文介绍了在服务器端如何使用Flask框架处理客户端发送的POST请求，以及在Android App中如何向服务器发送POST请求。  实验环境服务器：Ubuntu 14.04 x64, IP地址: 10.10.10.">
+<meta name="keywords" content="Android,Python,Flask,POST">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android App与Flask通信实例：POST数据的发送与处理">
+<meta property="og:url" content="https://g2ex.top/2015/11/19/Post-from-Android-App-to-Flask-Server/index.html">
+<meta property="og:site_name" content="G2EX">
+<meta property="og:description" content="一、说明在Android开发中，当应用需要向服务器提交数据数据时，可以使用POST方式向服务器提交form表单。服务器端框架有多种选择，快速开发可以使用Python的Flask框架。本文介绍了在服务器端如何使用Flask框架处理客户端发送的POST请求，以及在Android App中如何向服务器发送POST请求。  实验环境服务器：Ubuntu 14.04 x64, IP地址: 10.10.10.">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/gymgle/imgur/2015-11-18_221835.webp">
+<meta property="og:updated_time" content="2020-11-25T02:09:19.688Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android App与Flask通信实例：POST数据的发送与处理">
+<meta name="twitter:description" content="一、说明在Android开发中，当应用需要向服务器提交数据数据时，可以使用POST方式向服务器提交form表单。服务器端框架有多种选择，快速开发可以使用Python的Flask框架。本文介绍了在服务器端如何使用Flask框架处理客户端发送的POST请求，以及在Android App中如何向服务器发送POST请求。  实验环境服务器：Ubuntu 14.04 x64, IP地址: 10.10.10.">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/gymgle/imgur/2015-11-18_221835.webp">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://g2ex.top/2015/11/19/Post-from-Android-App-to-Flask-Server/">
+
+
+
+
+
+  <title> Android App与Flask通信实例：POST数据的发送与处理 | G2EX </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?0056c67deccbe6617d059b40d352195f";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">G2EX</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="https://g2ex.top/2015/11/19/Post-from-Android-App-to-Flask-Server/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="Yaming Gong">
+    <meta itemprop="description" content>
+    <meta itemprop="image" content="/avatar.png">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="G2EX">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="G2EX" src>
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Android App与Flask通信实例：POST数据的发送与处理
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2015-11-19T23:00:00+00:00">
+                2015-11-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <a href="/2015/11/19/Post-from-Android-App-to-Flask-Server/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2015/11/19/Post-from-Android-App-to-Flask-Server/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="一、说明"><a href="#一、说明" class="headerlink" title="一、说明"></a>一、说明</h2><p>在Android开发中，当应用需要向服务器提交数据数据时，可以使用POST方式向服务器提交form表单。服务器端框架有多种选择，快速开发可以使用Python的Flask框架。本文介绍了在服务器端如何使用Flask框架处理客户端发送的POST请求，以及在Android App中如何向服务器发送POST请求。</p>
+<blockquote>
+<p>实验环境<br>服务器：Ubuntu 14.04 x64, IP地址: 10.10.10.128<br>Android IDE：Android Studio 1.4.1<br>辅助测试工具：Chrome应用<code>Postman</code></p>
+</blockquote>
+<p>本文中，Android客户端使用POST的方式向服务器提交form表单。我们假设需要提交的form表单只有两个字段，分别是<code>uid=&quot;001&quot;</code>和<code>name=&quot;g2ex&quot;</code>。</p>
+<p>接下来，我们先编写服务器端Flask应用，接收客户端发送的POST数据，解析出这两个参数的内容，并向客户端返回确认信息<code>OK.</code>。然后再在Android Studio中编写客户端App实现POST提交数据的过程。</p>
+<h2 id="二、服务器端开发"><a href="#二、服务器端开发" class="headerlink" title="二、服务器端开发"></a>二、服务器端开发</h2><p>本文中，服务器端使用Python的Flask框架。想要快速了解Flask，可以参考<a href="http://docs.jinkan.org/docs/flask/" title="Flask中文开发文档" target="_blank" rel="noopener">Flask中文开发文档</a>。Flask的安装请参考<a href="http://docs.jinkan.org/docs/flask/installation.html" title="安装Flask" target="_blank" rel="noopener">Flask安装说明</a>。</p>
+<h3 id="1-编写一个简单的Flask应用"><a href="#1-编写一个简单的Flask应用" class="headerlink" title="1) 编写一个简单的Flask应用"></a>1) 编写一个简单的Flask应用</h3><p>使用Flask处理客户端的POST请求非常简单，我们创建一个项目目录<code>flaskr</code>，在目录下创建一个名为<code>myapp.py</code>的文件，写入如下代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask, request</span><br><span class="line"></span><br><span class="line"><span class="comment"># create the application object</span></span><br><span class="line">app = Flask(__name__)</span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route('/', methods=['POST'])</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">post</span><span class="params">()</span>:</span></span><br><span class="line">    uid = request.form[<span class="string">'uid'</span>]</span><br><span class="line">    name =  request.form[<span class="string">'name'</span>]</span><br><span class="line">    <span class="keyword">print</span> <span class="string">'uid: %s, name: %s'</span> % (uid, name)</span><br><span class="line">    <span class="keyword">return</span> <span class="string">'OK.'</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    app.run(host=<span class="string">'0.0.0.0'</span>, debug=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+
+<p>使用下面的命令启动Flask，默认在本机的<code>5000</code>端口上监听来自所有网络的POST请求。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python myapp.py</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-简单测试Flask"><a href="#2-简单测试Flask" class="headerlink" title="2) 简单测试Flask"></a>2) 简单测试Flask</h3><p>在Chrome浏览器<code>chrome://apps</code>中打开<code>Postman</code>应用。类型选择<code>POST</code>，服务器地址中输入<code>http://10.10.10.128:5000</code>，<code>Body</code>中勾选<code>x-www-form-urlencoded</code>，并在下面的<code>Key-Value</code>中输入我们要提交的内容。点击<code>Send</code>可以看到服务器返回的<code>OK.</code>，说明我们编写的Flask应用可以处理POST请求。如下图所示。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/gymgle/imgur/2015-11-18_221835.webp" alt="Postman POST测试" title="Postman POST测试"></p>
+<p>此时，在服务器端的Terminal中，可以看到打印出来的记录：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">uid: 001, name: g2ex</span><br><span class="line">10.10.10.1 - - [18/Nov/2015 22:52:25] <span class="string">"POST / HTTP/1.1"</span> 200 -</span><br></pre></td></tr></table></figure>
+
+<h2 id="三、Android客户端开发"><a href="#三、Android客户端开发" class="headerlink" title="三、Android客户端开发"></a>三、Android客户端开发</h2><p>本文中，Android客户端使用POST的方式向服务器提交form数据，可以编写<code>HttpUtils</code>类实现这个功能，<code>HttpUtils</code>类中使用了标准Java接口<code>HttpURLConnection</code>。</p>
+<p>首先，使用Android Studio创建一个名为<code>PostTest</code>的项目，在布局文件<code>activity_main.xml</code>中创建一个id为<code>button_send</code>的按钮。</p>
+<p>在<code>MainActivity</code>中的<code>onCreate()</code>中添加按钮监听事件，按钮点击后调用<code>postData()</code>，<code>postData()</code>启动线程使用<code>HttpUtils</code>类的静态方法<code>submitPostData()</code>向服务器POST数据。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* MainActivity.java */</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> Button mButton_send;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">super</span>.onCreate(savedInstanceState);</span><br><span class="line">    setContentView(R.layout.activity_main);</span><br><span class="line"></span><br><span class="line">    mButton_send = (Button)findViewById(R.id.button_send);</span><br><span class="line">    mButton_send.setOnClickListener(<span class="keyword">new</span> View.OnClickListener() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onClick</span><span class="params">(View v)</span> </span>&#123;</span><br><span class="line">            postData();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">postData</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            Map&lt;String, String&gt; params = <span class="keyword">new</span> HashMap&lt;String, String&gt;();</span><br><span class="line">            String post_result = <span class="keyword">null</span>;</span><br><span class="line">            params.put(<span class="string">"uid"</span>, <span class="string">"001"</span>);</span><br><span class="line">            params.put(<span class="string">"name"</span>, <span class="string">"g2ex"</span>);</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                post_result = HttpUtils.submitPostData(params, <span class="string">"utf-8"</span>);</span><br><span class="line">                Log.i(<span class="string">"POST_RESULT"</span>, post_result);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (MalformedURLException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;).start();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>HttpUtils</code>类有三个静态方法：</p>
+<ul>
+<li><code>submitPostData()</code>方法发送POST请求到服务器并返回服务器信息</li>
+<li><code>getRequestData()</code>方法用于封装请求体</li>
+<li><code>dealResponseResult()</code>方法处理服务器的响应结果</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* HttpUtils.java */</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HttpUtils</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">submitPostData</span><span class="params">(Map&lt;String, String&gt; params, String encode)</span> <span class="keyword">throws</span> MalformedURLException </span>&#123;</span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * 发送POST请求到服务器并返回服务器信息</span></span><br><span class="line"><span class="comment">         * <span class="doctag">@param</span> params 请求体内容</span></span><br><span class="line"><span class="comment">         * <span class="doctag">@param</span> encode 编码格式</span></span><br><span class="line"><span class="comment">         * <span class="doctag">@return</span> 服务器返回信息</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="keyword">byte</span>[] data = getRequestData(params, encode).toString().getBytes();</span><br><span class="line">        URL url = <span class="keyword">new</span> URL(<span class="string">"http://10.10.10.128:5000/"</span>);</span><br><span class="line">        HttpURLConnection httpURLConnection = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">try</span>&#123;</span><br><span class="line">            httpURLConnection = (HttpURLConnection)url.openConnection();</span><br><span class="line">            httpURLConnection.setConnectTimeout(<span class="number">3000</span>);  <span class="comment">// 设置连接超时时间</span></span><br><span class="line">            httpURLConnection.setDoInput(<span class="keyword">true</span>);         <span class="comment">// 打开输入流，以便从服务器获取数据</span></span><br><span class="line">            httpURLConnection.setDoOutput(<span class="keyword">true</span>);        <span class="comment">// 打开输出流，以便向服务器提交数据</span></span><br><span class="line">            httpURLConnection.setRequestMethod(<span class="string">"POST"</span>); <span class="comment">// 设置以POST方式提交数据</span></span><br><span class="line">            httpURLConnection.setUseCaches(<span class="keyword">false</span>);      <span class="comment">// 使用POST方式不能使用缓存</span></span><br><span class="line">            <span class="comment">// 设置请求体的类型是文本类型</span></span><br><span class="line">            httpURLConnection.setRequestProperty(<span class="string">"Content-Type"</span>, <span class="string">"application/x-www-form-urlencoded"</span>);</span><br><span class="line">            <span class="comment">// 设置请求体的长度</span></span><br><span class="line">            httpURLConnection.setRequestProperty(<span class="string">"Content-Length"</span>, String.valueOf(data.length));</span><br><span class="line">            <span class="comment">// 获得输入流，向服务器写入数据</span></span><br><span class="line">            OutputStream outputStream = <span class="keyword">new</span> BufferedOutputStream(httpURLConnection.getOutputStream());</span><br><span class="line">            outputStream.write(data);</span><br><span class="line">            outputStream.flush();                       <span class="comment">// 重要！flush()之后才会写入</span></span><br><span class="line"></span><br><span class="line">            <span class="keyword">int</span> response = httpURLConnection.getResponseCode();     <span class="comment">// 获得服务器响应码</span></span><br><span class="line">            <span class="keyword">if</span> (response == HttpURLConnection.HTTP_OK) &#123;</span><br><span class="line">                InputStream inputStream = httpURLConnection.getInputStream();</span><br><span class="line">                <span class="keyword">return</span> dealResponseResult(inputStream);             <span class="comment">// 处理服务器响应结果</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            httpURLConnection.disconnect();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="string">""</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 封装请求体信息</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> params 请求体内容</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> encode 编码格式</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> 请求体信息</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> StringBuffer <span class="title">getRequestData</span><span class="params">(Map&lt;String, String&gt; params, String encode)</span> </span>&#123;</span><br><span class="line">        StringBuffer stringBuffer = <span class="keyword">new</span> StringBuffer();            <span class="comment">//存储封装好的请求体信息</span></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">for</span> (Map.Entry&lt;String, String&gt; entry : params.entrySet()) &#123;</span><br><span class="line">                stringBuffer.append(entry.getKey())</span><br><span class="line">                        .append(<span class="string">"="</span>)</span><br><span class="line">                        .append(URLEncoder.encode(entry.getValue(), encode))</span><br><span class="line">                        .append(<span class="string">"&amp;"</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            stringBuffer.deleteCharAt(stringBuffer.length() - <span class="number">1</span>);   <span class="comment">// 删除最后一个"&amp;"</span></span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> stringBuffer;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 处理服务器的响应结果（将输入流转换成字符串)</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> inputStream 服务器的响应输入流</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> 服务器响应结果字符串</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">dealResponseResult</span><span class="params">(InputStream inputStream)</span> </span>&#123;</span><br><span class="line">        String resultData = <span class="keyword">null</span>;</span><br><span class="line">        ByteArrayOutputStream byteArrayOutputStream = <span class="keyword">new</span> ByteArrayOutputStream();</span><br><span class="line">        <span class="keyword">byte</span>[] data = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">1024</span>];</span><br><span class="line">        <span class="keyword">int</span> len = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">while</span> ((len = inputStream.read(data)) != -<span class="number">1</span>) &#123;</span><br><span class="line">                byteArrayOutputStream.write(data, <span class="number">0</span>, len);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        resultData = <span class="keyword">new</span> String(byteArrayOutputStream.toByteArray());</span><br><span class="line">        <span class="keyword">return</span> resultData;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>最后，记得在<code>AndroidManifest.xml</code>中加入网络权限：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">uses-permission</span> <span class="attr">android:name</span>=<span class="string">"android.permission.INTERNET"</span>/&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>运行应用，在Android Studio logcat中可以看到输出的日志<code>I/POST_RESULT: OK.</code>，服务器终端中也可以看到打印的内容和访问记录。</p>
+<blockquote>
+<p>源码下载：<a href="http://pan.baidu.com/s/13G7LW" target="_blank" rel="noopener">http://pan.baidu.com/s/13G7LW</a> 密码: 4ww5</p>
+</blockquote>
+<h2 id="四、参考内容"><a href="#四、参考内容" class="headerlink" title="四、参考内容"></a>四、参考内容</h2><ol>
+<li><a href="http://docs.jinkan.org/docs/flask/" target="_blank" rel="noopener">http://docs.jinkan.org/docs/flask/</a> 《Flask中文开发文档》</li>
+<li><a href="http://www.cnblogs.com/menlsh/archive/2013/05/22/3091983.html" target="_blank" rel="noopener">http://www.cnblogs.com/menlsh/archive/2013/05/22/3091983.html</a> 《Android学习笔记46：使用Post方式提交数据》。本文中的<code>HttpUtils</code>引用自该文章，文章中服务器端使用的是Apache Tomcat。</li>
+</ol>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+            <a href="/tags/Python/" rel="tag"># Python</a>
+          
+            <a href="/tags/Flask/" rel="tag"># Flask</a>
+          
+            <a href="/tags/POST/" rel="tag"># POST</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2015/11/08/Install-ownCloud-8-2-on-Ubuntu-14-04/" rel="next" title="Ubuntu 14.04部署ownCloud 8.2">
+                <i class="fa fa-chevron-left"></i> Ubuntu 14.04部署ownCloud 8.2
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/02/18/Android-NFC-Program/" rel="prev" title="Android NFC 开发简介与示例">
+                Android NFC 开发简介与示例 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/avatar.png" alt="Yaming Gong">
+          <p class="site-author-name" itemprop="name">Yaming Gong</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">63</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">102</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/gymgle" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://twitter.com/gymgle" target="_blank" title="Twitter">
+                  
+                    <i class="fa fa-fw fa-twitter"></i>
+                  
+                  Twitter
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/773662567" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  Weibo
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.flickr.com/photos/gymgle/" target="_blank" title="Flickr">
+                  
+                    <i class="fa fa-fw fa-flickr"></i>
+                  
+                  Flickr
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+          <div class="cc-license motion-element" itemprop="license">
+            <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" target="_blank">
+              <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons">
+            </a>
+          </div>
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、说明"><span class="nav-number">1.</span> <span class="nav-text">一、说明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、服务器端开发"><span class="nav-number">2.</span> <span class="nav-text">二、服务器端开发</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-编写一个简单的Flask应用"><span class="nav-number">2.1.</span> <span class="nav-text">1) 编写一个简单的Flask应用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-简单测试Flask"><span class="nav-number">2.2.</span> <span class="nav-text">2) 简单测试Flask</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、Android客户端开发"><span class="nav-number">3.</span> <span class="nav-text">三、Android客户端开发</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#四、参考内容"><span class="nav-number">4.</span> <span class="nav-text">四、参考内容</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy;  2012 - 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yaming Gong</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+    <script type="text/javascript">
+      var disqus_shortname = 'g2ex';
+      var disqus_identifier = '2015/11/19/Post-from-Android-App-to-Flask-Server/';
+
+      var disqus_title = "Android App与Flask通信实例：POST数据的发送与处理";
+
+
+      function run_disqus_script(disqus_script) {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      }
+
+      run_disqus_script('count.js');
+
+      
+        var disqus_config = function () {
+            this.page.url = disqus_url;
+            this.page.identifier = disqus_identifier;
+            this.page.title = disqus_title;
+        };
+        run_disqus_script('embed.js');
+      
+
+    </script>
+  
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

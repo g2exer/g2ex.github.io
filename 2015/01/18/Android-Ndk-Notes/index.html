@@ -1,0 +1,877 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="Android,NDK,JNI,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="G2EX" type="application/atom+xml">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0">
+
+
+
+
+
+
+<meta name="description" content="在Android开发中需要实现一个加解密功能，为了增加被逆向的难度，决定使用JNI实现该功能。使用C/C++编写代码，编译链接成.so动态库，提供给Java调用。本文简单总结了Eclipse中Android NDK环境的搭建过程，编写了一个JNI的小例子，记录了一些开发中遇到的问题。 一、Android NDK与JNI简介Android NDK（Native Development Kit ）是一">
+<meta name="keywords" content="Android,NDK,JNI">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android NDK开发笔记">
+<meta property="og:url" content="https://g2ex.top/2015/01/18/Android-Ndk-Notes/index.html">
+<meta property="og:site_name" content="G2EX">
+<meta property="og:description" content="在Android开发中需要实现一个加解密功能，为了增加被逆向的难度，决定使用JNI实现该功能。使用C/C++编写代码，编译链接成.so动态库，提供给Java调用。本文简单总结了Eclipse中Android NDK环境的搭建过程，编写了一个JNI的小例子，记录了一些开发中遇到的问题。 一、Android NDK与JNI简介Android NDK（Native Development Kit ）是一">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/gymgle/imgur/2015-01-17_170900.webp">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/gymgle/imgur/2015-01-17_213510.webp">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/gymgle/imgur/2015-01-17_224538.webp">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/gymgle/imgur/2015-01-17_230000.webp">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/gymgle/imgur/2015-01-17_233948.webp">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/gymgle/imgur/2015-01-17_234157.webp">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/gymgle/imgur/2015-01-18_001951.webp">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/gymgle/imgur/2015-01-18_115549.webp">
+<meta property="og:updated_time" content="2020-11-25T02:09:19.684Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android NDK开发笔记">
+<meta name="twitter:description" content="在Android开发中需要实现一个加解密功能，为了增加被逆向的难度，决定使用JNI实现该功能。使用C/C++编写代码，编译链接成.so动态库，提供给Java调用。本文简单总结了Eclipse中Android NDK环境的搭建过程，编写了一个JNI的小例子，记录了一些开发中遇到的问题。 一、Android NDK与JNI简介Android NDK（Native Development Kit ）是一">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/gymgle/imgur/2015-01-17_170900.webp">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://g2ex.top/2015/01/18/Android-Ndk-Notes/">
+
+
+
+
+
+  <title> Android NDK开发笔记 | G2EX </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?0056c67deccbe6617d059b40d352195f";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">G2EX</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="https://g2ex.top/2015/01/18/Android-Ndk-Notes/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="Yaming Gong">
+    <meta itemprop="description" content>
+    <meta itemprop="image" content="/avatar.png">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="G2EX">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="G2EX" src>
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Android NDK开发笔记
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2015-01-18T00:00:00+00:00">
+                2015-01-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <a href="/2015/01/18/Android-Ndk-Notes/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2015/01/18/Android-Ndk-Notes/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>在Android开发中需要实现一个加解密功能，为了增加被逆向的难度，决定使用JNI实现该功能。使用C/C++编写代码，编译链接成<code>.so</code>动态库，提供给Java调用。本文简单总结了Eclipse中Android NDK环境的搭建过程，编写了一个JNI的小例子，记录了一些开发中遇到的问题。</p>
+<h2 id="一、Android-NDK与JNI简介"><a href="#一、Android-NDK与JNI简介" class="headerlink" title="一、Android NDK与JNI简介"></a>一、Android NDK与JNI简介</h2><p>Android NDK（Native Development Kit ）是一套工具集合，允许用C/C++语言实现应用程序的一部分功能。</p>
+<p>JNI（Java Native Interface）是Java的一种机制，允许使用其他语言（汇编、C/C++等）编写代码，并封装成动态库被Java调用。也就是说JNI提供了一个在Java平台上调用C/C++的一种途径，NDK是Android对JNI实现的一种支持。</p>
+<p>关于JNI的理解，请参考<a href="http://www.cnblogs.com/mandroid/archive/2011/06/15/2081093.html" target="_blank" rel="noopener">《JAVA基础之理解JNI原理》</a>，文中的图片介绍简单直观：<br><img src="https://cdn.jsdelivr.net/gh/gymgle/imgur/2015-01-17_170900.webp" alt="JNI" title="理解JNI原理"></p>
+<h2 id="二、Eclipse-NDK环境搭建"><a href="#二、Eclipse-NDK环境搭建" class="headerlink" title="二、Eclipse NDK环境搭建"></a>二、Eclipse NDK环境搭建</h2><p>准备工作：</p>
+<ul>
+<li>下载 <a href="https://eclipse.org/downloads/" target="_blank" rel="noopener">Eclipse</a>、<a href="https://eclipse.org/cdt/" target="_blank" rel="noopener">Eclipse CDT插件</a></li>
+<li>下载 <a href="http://developer.android.com/sdk/index.html#Other" target="_blank" rel="noopener">Android SDK</a>、<a href="http://developer.android.com/tools/sdk/ndk/index.html" target="_blank" rel="noopener">Android NDK</a>、<a href="http://developer.android.com/tools/sdk/eclipse-adt.html" target="_blank" rel="noopener">Android ADT插件</a></li>
+</ul>
+<ol>
+<li>解压Eclipse，同时安装Android SDK和NDK；</li>
+<li>安装CDT：Eclipse <code>help</code>-&gt;<code>Instlal New Software...</code>，选择已下载的CDT；</li>
+<li>安装ADT：Eclipse <code>help</code>-&gt;<code>Instlal New Software...</code>，选择已下载的ADT，安装过程中确认选中了<code>NDK Plugin</code>；</li>
+<li>配置SDK/NDK：Eclipse <code>Windows</code>-&gt;<code>Preferences</code>-&gt;<code>Android</code>，配置SDK路径，在<code>Android</code>的<code>NDK</code>标签下配置NDK路径。</li>
+</ol>
+<h2 id="三、JNI开发示例"><a href="#三、JNI开发示例" class="headerlink" title="三、JNI开发示例"></a>三、JNI开发示例</h2><p>开发环境：Windows 7 SP1 x64，Eclipse LUNA，JDK 1.7，CDT 8.5.0，ADT 23.0.4</p>
+<h3 id="1-新建Android项目"><a href="#1-新建Android项目" class="headerlink" title="1) 新建Android项目"></a>1) 新建Android项目</h3><ol>
+<li><p>Eclipse新建Android项目，这里命名为<code>jnitest</code>。
+<img src="https://cdn.jsdelivr.net/gh/gymgle/imgur/2015-01-17_213510.webp" alt="New Android Application" title="New Android Application"></p>
+</li>
+<li><p>我们使用<code>TextView</code>显示JNI的调用结果，修改<code>res</code>-&gt;<code>layout</code>目录下的<code>activity_main.xml</code>，给默认的<code>TextView</code>添加一个id：<code>tvTest</code>，方便以后在<code>MainActivity</code>中调用。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">TextView</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:id</span>=<span class="string">"@+id/tvTest"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_width</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:text</span>=<span class="string">"@string/hello_world"</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h3 id="2-添加Native支持"><a href="#2-添加Native支持" class="headerlink" title="2) 添加Native支持"></a>2) 添加Native支持</h3><p><code>jnitest</code>项目右键<code>Android Tool</code>-&gt;<code>Add Native Support...</code>，这里为动态库命名为<code>doit</code>，然后在Android工程目录中会生成一个<code>jni</code>目录，并生成<code>Android.mk</code>和<code>doit.cpp</code>文件。<br><img src="https://cdn.jsdelivr.net/gh/gymgle/imgur/2015-01-17_224538.webp" alt="Add Android Native Support" title="Add Android Native Support"></p>
+<p><code>Android.mk</code>文件的功能类似GNU Makefile，详细了解请参考<a href="http://blog.csdn.net/zhandoushi1982/article/details/5316669" target="_blank" rel="noopener">《Android.mk的用法和基础》</a>。打开<code>Android.mk</code>，从下面两行代码可以看出，我们要编译的模块名字是<code>doit</code>，编译使用的源文件是<code>doit.cpp</code>：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">LOCAL_MODULE    := doit</span><br><span class="line">LOCAL_SRC_FILES := doit.cpp</span><br></pre></td></tr></table></figure>
+
+<p>如果添加了更多的<code>.cpp</code>源文件，需要在<code>Android.mk</code>中<code>LOCAL_SRC_FILES</code>后添加对应的源文件。</p>
+<p>另外需要注意的地方，就是动态库的名字。在给动态库命名时我们只写了<code>doit</code>，Eclipse默认给添加了<code>lib</code>和<code>.so</code>，也就是说动态库的名字应该是<code>libdoit.so</code>。这是因为linux的动态库命名必须以<code>lib</code>开头，即<code>libXXX.so</code>。<code>XXX</code>是动态库的名字，我们在Java代码中加载动态库的时候指定名字是<code>XXX</code>而不是<code>libXXX</code>。</p>
+<p>当我们编写完C/C++代码并编译链接后，会在项目的<code>libs\armeabi</code>目录下生成<code>libdoit.so</code>。</p>
+<h3 id="3-添加JNI类"><a href="#3-添加JNI类" class="headerlink" title="3) 添加JNI类"></a>3) 添加JNI类</h3><p>为Android项目添加一个Java类，这里命名为<code>JNITest</code>：
+<img src="https://cdn.jsdelivr.net/gh/gymgle/imgur/2015-01-17_230000.webp" alt="New Java Class" title="New Java Class"></p>
+<p><code>JNITest</code>类指定我们要加载的<code>libdoit.so</code>动态库并声明Native方法。这个Native方法就是我们接下来要使用C/C++实现的方法。</p>
+<p>JNITest类的实现如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.example.jnitest;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">JNITest</span> </span>&#123;</span><br><span class="line">	<span class="keyword">static</span> &#123;</span><br><span class="line">		System.loadLibrary(<span class="string">"doit"</span>);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">native</span> String <span class="title">DoIt</span><span class="params">(String s)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>第5行使用<code>System.loadLibrary(&quot;doit&quot;);</code>指定加载<code>libdoit.so</code>，第8行声明了<code>DoIt()</code>的Native方法，参数和返回值都是字符串类型。</p>
+<p>如果只是简单地演示，完全可以在<code>MainActivity.java</code>里加载动态库和声明Native方法。这里编写了一个<code>JNITest</code>类，是为了更好地扩展，以便在其他项目里也能使用这个类来调用生成的动态库。</p>
+<h3 id="4-实现C-C-方法"><a href="#4-实现C-C-方法" class="headerlink" title="4) 实现C/C++方法"></a>4) 实现C/C++方法</h3><p>打开<code>jni</code>下的<code>doit.cpp</code>，添加如下代码：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">extern</span> <span class="string">"C"</span> &#123;</span><br><span class="line">    <span class="function">JNIEXPORT jstring <span class="title">Java_com_example_jnitest_JNITest_DoIt</span><span class="params">(JNIEnv* env, jobject obj, jstring s)</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">JNIEXPORT jstring <span class="title">Java_com_example_jnitest_JNITest_DoIt</span><span class="params">(JNIEnv* env, jobject obj, jstring s)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// 具体实现</span></span><br><span class="line">    <span class="keyword">return</span> env-&gt;NewStringUTF(<span class="string">"Good Job!"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>函数说明：</p>
+<ul>
+<li>返回值：<code>jstring</code>是函数的返回值类型，如果没有返回值，写<code>void</code>，如果返回值是<code>int</code>型，写<code>jint</code>，即在C/C++类型前加<code>j</code>。</li>
+<li>函数名<code>Java_com_example_jnitest_JNITest_DoIt</code>：函数名要以<code>_</code>连接，<code>Java</code>是必需的，<code>com_example_jnitest</code>是<code>JNITest</code>类的包名，也就是我们创建Android项目时命名的包名，<code>JNITest</code>是声明Native方法的类名，<code>DoIt</code>是Native方法名。</li>
+<li>函数的参数：<code>JNIEnv* env</code>和<code>jobject obj</code>是实现Native方法必需的两个参数，我们在<code>JNITest</code>类中声明的Native方法只有一个<code>String</code>类型的参数，在这里要添加到这两个参数后面，使用<code>jstring</code>类型。</li>
+<li>因此，C/C++实现JNI方法时函数的命名规则是：<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">JNIEXPORT 返回值类型 Java_包名_类名_方法名(JNIEnv* env, jobject obj, 自定义参数...);</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h3 id="5-新建C-C-Builder"><a href="#5-新建C-C-Builder" class="headerlink" title="5) 新建C/C++ Builder"></a>5) 新建C/C++ Builder</h3><p>为了更方便地编译C/C++，我们新建一个Builder：</p>
+<ol>
+<li><code>jnitest</code>项目右键<code>Properties</code>-&gt;<code>Builders</code>-&gt;<code>New</code>，选择<code>Program</code>，点击<code>OK</code>，我们把它命名为<code>NDK_Builder</code>。</li>
+<li>Main选项卡：<br>在<code>Location:</code>中点击<code>Browse File System...</code>选择Android NDK目录下的<code>ndk-build.cmd</code>；
+在<code>Working Directory:</code>中输入<code>${workspace_loc}\jnitest</code>，或者通过<code>Browse File System...</code>选择项目所在目录。<br><img src="https://cdn.jsdelivr.net/gh/gymgle/imgur/2015-01-17_233948.webp" alt="Builder Main Option" title="Builder Main Option"></li>
+<li>Build Options选项卡：<br>默认勾选了<code>Allocate Console (necessary for input)</code>、<code>After a &quot;Clean&quot;</code>、<code>During manual builds</code>；
+勾选<code>During auto builds</code>和<code>During a &quot;Clean&quot;</code>；
+也可以勾选<code>Specify working set of relevant resources</code>并点击<code>Specify Resources…</code>指定项目。<br><img src="https://cdn.jsdelivr.net/gh/gymgle/imgur/2015-01-17_234157.webp" alt="Builder Optoins" title="Builder Option"></li>
+<li>点击<code>OK</code>完成配置。</li>
+</ol>
+<p>这样，以后每次点击<code>Project</code>-&gt;<code>clean...</code>就直接编译链接C/C++了，在项目的<code>libs\armeabi</code>下会自动生成<code>libdoit.so</code>动态库。</p>
+<h3 id="6-Android代码实现"><a href="#6-Android代码实现" class="headerlink" title="6) Android代码实现"></a>6) Android代码实现</h3><p>接下来我们在Android的<code>MainActivity.java</code>中实例化<code>JNITest</code>类并把<code>DoIt()</code>方法返回的字符串显示到Android的<code>TextView</code>中：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// MainActivity.java</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">package</span> com.example.jnitest;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> android.support.v7.app.ActionBarActivity;</span><br><span class="line"><span class="keyword">import</span> android.os.Bundle;</span><br><span class="line"><span class="keyword">import</span> android.view.Menu;</span><br><span class="line"><span class="keyword">import</span> android.view.MenuItem;</span><br><span class="line"><span class="keyword">import</span> android.widget.TextView;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> <span class="keyword">extends</span> <span class="title">ActionBarActivity</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">private</span> TextView tv;                 <span class="comment">// TextView</span></span><br><span class="line">	<span class="keyword">private</span> String s = <span class="string">"Just Do It"</span>;     <span class="comment">// DoIt()的参数</span></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">super</span>.onCreate(savedInstanceState);</span><br><span class="line">		setContentView(R.layout.activity_main);</span><br><span class="line">		tv = (TextView) findViewById(R.id.tvTest);</span><br><span class="line"></span><br><span class="line">		JNITest jnitest = <span class="keyword">new</span> JNITest(); <span class="comment">// 实例化JNITest类</span></span><br><span class="line">		tv.setText(jnitest.DoIt(s));     <span class="comment">// 调用Native方法</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 其他代码</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>jnitest</code>项目右键<code>Run As</code>-&gt;<code>Android Application</code>，使用模拟器或者手机来测试一下吧。<br><img src="https://cdn.jsdelivr.net/gh/gymgle/imgur/2015-01-18_001951.webp" alt="模拟器运行结果" title="模拟器运行结果"></p>
+<h3 id="7-更复杂一点"><a href="#7-更复杂一点" class="headerlink" title="7) 更复杂一点"></a>7) 更复杂一点</h3><p>上面的JNI小程序已经结束了。但在实际开发中可不会实现这么简单的功能，复杂的功能可能需要添加多个C/C++源文件和头文件。这里，我们演示JNI中添加<code>.cpp</code>和<code>.h</code>，在Android的SDCard上创建文件。</p>
+<p>1.项目右键<code>New</code>-&gt;<code>Header File</code>，新建C/C++头文件<code>other.h</code>，在头文件中声明函数：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">createfile</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *filename)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p>2.项目右键<code>New</code>-&gt;<code>Source File</code>，新建C++源文件<code>other.cpp</code>，编写代码：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"other.h"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">createfile</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *filename)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	FILE *file;</span><br><span class="line">	<span class="keyword">if</span> ((file = fopen(filename, <span class="string">"wb"</span>)) == <span class="literal">NULL</span>)</span><br><span class="line">		<span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">	fclose(file);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>3.在<code>doit.cpp</code>中引用<code>other.h</code>，调用<code>createfile()</code>：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;jni.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"other.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">extern</span> <span class="string">"C"</span> &#123;</span><br><span class="line">    <span class="function">JNIEXPORT jstring <span class="title">Java_com_example_jnitest_JNITest_DoIt</span><span class="params">(JNIEnv* env, jobject obj, jstring s)</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">JNIEXPORT jstring <span class="title">Java_com_example_jnitest_JNITest_DoIt</span><span class="params">(JNIEnv* env, jobject obj, jstring s)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="comment">// 把jstring转换为char *</span></span><br><span class="line">	<span class="keyword">const</span> <span class="keyword">char</span> *filename = env-&gt;GetStringUTFChars(s, <span class="number">0</span>);</span><br><span class="line">    createfile(filename);</span><br><span class="line">    <span class="keyword">return</span> env-&gt;NewStringUTF(<span class="string">"Good Job!"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>4.非常重要的一步：在<code>Android.mk</code>中添加<code>other.cpp</code>，否则编译链接的时候会出现<code>error: undefined reference to xxx</code>的错误：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">LOCAL_PATH := $(call my-dir)</span><br><span class="line"></span><br><span class="line">include $(CLEAR_VARS)</span><br><span class="line"></span><br><span class="line">LOCAL_MODULE    := doit</span><br><span class="line">LOCAL_SRC_FILES := doit.cpp \</span><br><span class="line">                   other.cpp</span><br><span class="line"></span><br><span class="line">include $(BUILD_SHARED_LIBRARY)</span><br></pre></td></tr></table></figure>
+
+<p>5.<code>Project</code>-&gt;<code>Clean...</code>编译链接生成动态库。</p>
+<p>6.这里涉及到操作Android SDCard，需要在项目的<code>AndroidManifest.xml</code>中添加相应权限：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">uses-permission</span> <span class="attr">android:name</span>=<span class="string">"android.permission.WRITE_EXTERNAL_STORAGE"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">uses-permission</span> <span class="attr">android:name</span>=<span class="string">"android.permission.MOUNT_UNMOUNT_FILESYSTEMS"</span>/&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>另外，修改<code>MainActivity.java</code>，给Native方法<code>DoIt(String s)</code>传递参数指定创建文件的名字：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> <span class="keyword">extends</span> <span class="title">ActionBarActivity</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">private</span> TextView tv;</span><br><span class="line">	<span class="keyword">private</span> String s = <span class="string">"/sdcard/JustDoIt.txt"</span>;</span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">super</span>.onCreate(savedInstanceState);</span><br><span class="line">		setContentView(R.layout.activity_main);</span><br><span class="line">		tv = (TextView) findViewById(R.id.tvTest);</span><br><span class="line"></span><br><span class="line">		JNITest jnitest = <span class="keyword">new</span> JNITest();</span><br><span class="line">		tv.setText(jnitest.DoIt(s));</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+
+<p>项目右键<code>Run As</code>-&gt;<code>Android Application</code>，启动模拟器或连接手机，查看SD卡上是否成功创建了文件。<br><img src="https://cdn.jsdelivr.net/gh/gymgle/imgur/2015-01-18_115549.webp" alt="模拟器运行结果" title="模拟器运行结果"></p>
+<h3 id="8-示例程序下载"><a href="#8-示例程序下载" class="headerlink" title="8) 示例程序下载"></a>8) 示例程序下载</h3><p>百度网盘: <a href="http://pan.baidu.com/s/1dD2DNhR" target="_blank" rel="noopener">http://pan.baidu.com/s/1dD2DNhR</a> 密码: zgvz</p>
+<h2 id="三、JNI技巧"><a href="#三、JNI技巧" class="headerlink" title="三、JNI技巧"></a>三、JNI技巧</h2><h3 id="技巧1-JNI实现函数中LOG打印"><a href="#技巧1-JNI实现函数中LOG打印" class="headerlink" title="技巧1. JNI实现函数中LOG打印"></a>技巧1. JNI实现函数中LOG打印</h3><p>在Java环境下使用JNI时可以方便的使用printf函数打印信息，在Eclipse控制台Console视图可以方便的观察到，可在Android环境下使用JNI的话，printf函数就无效了，LogCat视图和Console视图里看不到任何输出。但我们可以使用Android本身的log方法，其实现步骤如下：</p>
+<p>1.在JNI的实现代码文件（.c或者.cpp）中加入包含LOG头文件的如下代码：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;android/log.h&gt;</span></span></span><br></pre></td></tr></table></figure>
+
+<p>2.在需要打印的方法中添加打印代码，例如：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">__android_log_print(ANDROID_LOG_INFO, <span class="string">"jnitag"</span>, <span class="string">"Content"</span>);</span><br></pre></td></tr></table></figure>
+
+<p><code>ANDROID_LOG_INFO</code>是日志级别；<br><code>jnitag</code>是要过滤的标签，可以在LogCat视图中过滤；<br><code>Content</code>是实际的日志内容。</p>
+<p>3.在Android工程的Android.mk文件中添加如下内容：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">LOCAL_LDLIBS += -L$(SYSROOT)/usr/lib -llog</span><br></pre></td></tr></table></figure>
+
+<p>4.OK，现在就可以打印信息了。</p>
+<h3 id="技巧2-Converting-jstring-to-char"><a href="#技巧2-Converting-jstring-to-char" class="headerlink" title="技巧2. Converting jstring to char *"></a>技巧2. Converting jstring to char *</h3><p>以下是C语言实现：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">JNIEXPORT <span class="keyword">void</span> JNICALL <span class="title">Java_ClassName_MethodName</span><span class="params">(JNIEnv *env, jobject obj, jstring javaString)</span>  </span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">   <span class="keyword">const</span> <span class="keyword">char</span> *nativeString = (*env)-&gt;GetStringUTFChars(env, javaString, <span class="number">0</span>);</span><br><span class="line"> </span><br><span class="line">   <span class="comment">// use your string</span></span><br><span class="line"> </span><br><span class="line">   (*env)-&gt;ReleaseStringUTFChars(env, javaString, nativeString);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果使用C++，应该这样（env不加<code>*</code>，<code>GetStringUTFChars()</code>等方法少一个参数<code>env</code>）：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">JNIEXPORT <span class="keyword">void</span> JNICALL <span class="title">Java_ClassName_MethodName</span><span class="params">(JNIEnv *env, jobject obj, jstring javaString)</span>  </span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">   <span class="keyword">const</span> <span class="keyword">char</span> *nativeString = env-&gt;GetStringUTFChars(javaString, <span class="number">0</span>);</span><br><span class="line"> </span><br><span class="line">   <span class="comment">// use your string</span></span><br><span class="line"> </span><br><span class="line">   env-&gt;ReleaseStringUTFChars(javaString, nativeString);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="四、JNI问题"><a href="#四、JNI问题" class="headerlink" title="四、JNI问题"></a>四、JNI问题</h2><h3 id="问题1-导入Android工程时提示“XXX-overlaps-the-location-of-another-project-‘XXX’”"><a href="#问题1-导入Android工程时提示“XXX-overlaps-the-location-of-another-project-‘XXX’”" class="headerlink" title="问题1. 导入Android工程时提示“XXX overlaps the location of another project: ‘XXX’”"></a>问题1. 导入Android工程时提示“XXX overlaps the location of another project: ‘XXX’”</h3><p>导入时不要选择导入android工程，而是General工程。</p>
+<h3 id="问题2-删除Eclipse的-metadata文件夹NDK工程提示Program-quot-sh-quot-not-found-in-PATH"><a href="#问题2-删除Eclipse的-metadata文件夹NDK工程提示Program-quot-sh-quot-not-found-in-PATH" class="headerlink" title="问题2. 删除Eclipse的.metadata文件夹NDK工程提示Program &quot;sh&quot; not found in PATH"></a>问题2. 删除Eclipse的<code>.metadata</code>文件夹NDK工程提示<code>Program &quot;sh&quot; not found in PATH</code></h3><p>重新设置一下Eclipse：<code>Windows</code>-&gt;<code>Preferences</code>-&gt;<code>Android</code>-&gt;<code>NDK</code>，然后重启Eclipse。</p>
+<h3 id="问题3-更新eclipse或者删除eclipse的-metadata文件夹导致找不到jni-h等头文件"><a href="#问题3-更新eclipse或者删除eclipse的-metadata文件夹导致找不到jni-h等头文件" class="headerlink" title="问题3. 更新eclipse或者删除eclipse的.metadata文件夹导致找不到jni.h等头文件"></a>问题3. 更新eclipse或者删除eclipse的<code>.metadata</code>文件夹导致找不到<code>jni.h</code>等头文件</h3><p>参考：<a href="http://stackoverflow.com/questions/23122934/eclipse-adt-unresolved-inclusion-jni-h" target="_blank" rel="noopener">http://stackoverflow.com/questions/23122934/eclipse-adt-unresolved-inclusion-jni-h</a></p>
+<p><strong>Removing the C nature:</strong></p>
+<p>1.Close the Eclipse project (e.g. by quitting Eclipse).</p>
+<p>2.Open the <code>.project</code> file in a text or xml editor. There will be at least 2 <code>&lt;buildCommand&gt;</code> nodes that need to be removed. Remove the <code>&lt;buildCommand&gt;</code> node with name<code>org.eclipse.cdt.managedbuilder.core.genmakebuilder</code> and all its children, and the <code>&lt;buildCommand&gt;</code> node with name <code>org.eclipse.cdt.managedbuilder.core.ScannerConfigBuilder</code> and its children. Finally, remove the lines:</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">nature</span>&gt;</span>org.eclipse.cdt.core.cnature<span class="tag">&lt;/<span class="name">nature</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">nature</span>&gt;</span>org.eclipse.cdt.core.ccnature<span class="tag">&lt;/<span class="name">nature</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">nature</span>&gt;</span>org.eclipse.cdt.managedbuilder.core.managedBuildNature<span class="tag">&lt;/<span class="name">nature</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">nature</span>&gt;</span>org.eclipse.cdt.managedbuilder.core.ScannerConfigNature<span class="tag">&lt;/<span class="name">nature</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>3.Completely remove the <code>.cproject</code> file.</p>
+<p><strong>Adding back the Android Native nature</strong></p>
+<p>Reopen the project in Eclipse. Then right-click on the project in the Project Explorer, and from the “Android Tools” contextual menu, choose “Add Native Support…”.</p>
+<h3 id="问题4-Type-‘jint’-could-not-be-resolved-and-JNIEnv-jclass"><a href="#问题4-Type-‘jint’-could-not-be-resolved-and-JNIEnv-jclass" class="headerlink" title="问题4. Type ‘jint’ could not be resolved, and JNIEnv, jclass"></a>问题4. Type ‘jint’ could not be resolved, and JNIEnv, jclass</h3><p>参考：<a href="http://stackoverflow.com/questions/11666711/type-jint-could-not-be-resolved-and-jnienv-jclass" target="_blank" rel="noopener">http://stackoverflow.com/questions/11666711/type-jint-could-not-be-resolved-and-jnienv-jclass</a></p>
+<p>其实还是找不到<code>jni.h</code>，删除项目<code>.project</code>文件中的<code>&lt;nature&gt;org.eclipse.cdt.core.ccnature&lt;/nature&gt;</code>，重启Eclipse。</p>
+<h2 id="五、参考文章"><a href="#五、参考文章" class="headerlink" title="五、参考文章"></a>五、参考文章</h2><p><a href="http://www.cnblogs.com/mandroid/archive/2011/06/15/2081093.html" target="_blank" rel="noopener">http://www.cnblogs.com/mandroid/archive/2011/06/15/2081093.html</a><br><a href="http://blog.csdn.net/zhandoushi1982/article/details/5316669" target="_blank" rel="noopener">http://blog.csdn.net/zhandoushi1982/article/details/5316669</a><br><a href="http://blog.csdn.net/zhangjg_blog/article/details/15505781" target="_blank" rel="noopener">http://blog.csdn.net/zhangjg_blog/article/details/15505781</a><br><a href="http://weizhilizhiwei.iteye.com/blog/2157773" target="_blank" rel="noopener">http://weizhilizhiwei.iteye.com/blog/2157773</a></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+            <a href="/tags/NDK/" rel="tag"># NDK</a>
+          
+            <a href="/tags/JNI/" rel="tag"># JNI</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2014/12/26/Scrapy-Notes/" rel="next" title="Scrapy笔记">
+                <i class="fa fa-chevron-left"></i> Scrapy笔记
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2015/01/21/Android-SDK-Hosts/" rel="prev" title="Android SDK更新可用Hosts">
+                Android SDK更新可用Hosts <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/avatar.png" alt="Yaming Gong">
+          <p class="site-author-name" itemprop="name">Yaming Gong</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">63</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">102</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/gymgle" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://twitter.com/gymgle" target="_blank" title="Twitter">
+                  
+                    <i class="fa fa-fw fa-twitter"></i>
+                  
+                  Twitter
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/773662567" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  Weibo
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.flickr.com/photos/gymgle/" target="_blank" title="Flickr">
+                  
+                    <i class="fa fa-fw fa-flickr"></i>
+                  
+                  Flickr
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+          <div class="cc-license motion-element" itemprop="license">
+            <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" target="_blank">
+              <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons">
+            </a>
+          </div>
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、Android-NDK与JNI简介"><span class="nav-number">1.</span> <span class="nav-text">一、Android NDK与JNI简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、Eclipse-NDK环境搭建"><span class="nav-number">2.</span> <span class="nav-text">二、Eclipse NDK环境搭建</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、JNI开发示例"><span class="nav-number">3.</span> <span class="nav-text">三、JNI开发示例</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-新建Android项目"><span class="nav-number">3.1.</span> <span class="nav-text">1) 新建Android项目</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-添加Native支持"><span class="nav-number">3.2.</span> <span class="nav-text">2) 添加Native支持</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-添加JNI类"><span class="nav-number">3.3.</span> <span class="nav-text">3) 添加JNI类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-实现C-C-方法"><span class="nav-number">3.4.</span> <span class="nav-text">4) 实现C/C++方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-新建C-C-Builder"><span class="nav-number">3.5.</span> <span class="nav-text">5) 新建C/C++ Builder</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-Android代码实现"><span class="nav-number">3.6.</span> <span class="nav-text">6) Android代码实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-更复杂一点"><span class="nav-number">3.7.</span> <span class="nav-text">7) 更复杂一点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-示例程序下载"><span class="nav-number">3.8.</span> <span class="nav-text">8) 示例程序下载</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、JNI技巧"><span class="nav-number">4.</span> <span class="nav-text">三、JNI技巧</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#技巧1-JNI实现函数中LOG打印"><span class="nav-number">4.1.</span> <span class="nav-text">技巧1. JNI实现函数中LOG打印</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#技巧2-Converting-jstring-to-char"><span class="nav-number">4.2.</span> <span class="nav-text">技巧2. Converting jstring to char *</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#四、JNI问题"><span class="nav-number">5.</span> <span class="nav-text">四、JNI问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#问题1-导入Android工程时提示“XXX-overlaps-the-location-of-another-project-‘XXX’”"><span class="nav-number">5.1.</span> <span class="nav-text">问题1. 导入Android工程时提示“XXX overlaps the location of another project: ‘XXX’”</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#问题2-删除Eclipse的-metadata文件夹NDK工程提示Program-quot-sh-quot-not-found-in-PATH"><span class="nav-number">5.2.</span> <span class="nav-text">问题2. 删除Eclipse的.metadata文件夹NDK工程提示Program &quot;sh&quot; not found in PATH</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#问题3-更新eclipse或者删除eclipse的-metadata文件夹导致找不到jni-h等头文件"><span class="nav-number">5.3.</span> <span class="nav-text">问题3. 更新eclipse或者删除eclipse的.metadata文件夹导致找不到jni.h等头文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#问题4-Type-‘jint’-could-not-be-resolved-and-JNIEnv-jclass"><span class="nav-number">5.4.</span> <span class="nav-text">问题4. Type ‘jint’ could not be resolved, and JNIEnv, jclass</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#五、参考文章"><span class="nav-number">6.</span> <span class="nav-text">五、参考文章</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy;  2012 - 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yaming Gong</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+    <script type="text/javascript">
+      var disqus_shortname = 'g2ex';
+      var disqus_identifier = '2015/01/18/Android-Ndk-Notes/';
+
+      var disqus_title = "Android NDK开发笔记";
+
+
+      function run_disqus_script(disqus_script) {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      }
+
+      run_disqus_script('count.js');
+
+      
+        var disqus_config = function () {
+            this.page.url = disqus_url;
+            this.page.identifier = disqus_identifier;
+            this.page.title = disqus_title;
+        };
+        run_disqus_script('embed.js');
+      
+
+    </script>
+  
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

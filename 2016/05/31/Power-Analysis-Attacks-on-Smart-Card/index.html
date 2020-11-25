@@ -1,0 +1,795 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="SCA,SPA,DPA,Smart Card,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="G2EX" type="application/atom+xml">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0">
+
+
+
+
+
+
+<meta name="description" content="一、理解旁路攻击在前几年的工作里，对智能卡（或者说芯片卡、CPU 卡，比如 SIM 卡、芯片银行卡、社保卡等，另外 USBKEY 也属于智能卡的一种）的安全研究比较多，主要攻击智能卡中加密算法，获取算法密钥，验证智能卡安全性。用到的攻击手法就是本文要说的旁路攻击，英文名称是 Side Channel Attacks，也有的翻译成“侧信道攻击”或者“边道攻击”，它们都是一个意思。 首先谈谈我对旁路攻">
+<meta name="keywords" content="SCA,SPA,DPA,Smart Card">
+<meta property="og:type" content="article">
+<meta property="og:title" content="旁路之能量分析攻击总结">
+<meta property="og:url" content="https://g2ex.top/2016/05/31/Power-Analysis-Attacks-on-Smart-Card/index.html">
+<meta property="og:site_name" content="G2EX">
+<meta property="og:description" content="一、理解旁路攻击在前几年的工作里，对智能卡（或者说芯片卡、CPU 卡，比如 SIM 卡、芯片银行卡、社保卡等，另外 USBKEY 也属于智能卡的一种）的安全研究比较多，主要攻击智能卡中加密算法，获取算法密钥，验证智能卡安全性。用到的攻击手法就是本文要说的旁路攻击，英文名称是 Side Channel Attacks，也有的翻译成“侧信道攻击”或者“边道攻击”，它们都是一个意思。 首先谈谈我对旁路攻">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/gymgle/imgur/2016-05-31_power_analysis.webp">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/gymgle/imgur/2016-05-31_161613.webp">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/gymgle/imgur/2016-05-31_161853.webp">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/gymgle/imgur/2016-05-31_DPA_on_DES.webp">
+<meta property="og:updated_time" content="2020-11-25T02:09:19.688Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="旁路之能量分析攻击总结">
+<meta name="twitter:description" content="一、理解旁路攻击在前几年的工作里，对智能卡（或者说芯片卡、CPU 卡，比如 SIM 卡、芯片银行卡、社保卡等，另外 USBKEY 也属于智能卡的一种）的安全研究比较多，主要攻击智能卡中加密算法，获取算法密钥，验证智能卡安全性。用到的攻击手法就是本文要说的旁路攻击，英文名称是 Side Channel Attacks，也有的翻译成“侧信道攻击”或者“边道攻击”，它们都是一个意思。 首先谈谈我对旁路攻">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/gymgle/imgur/2016-05-31_power_analysis.webp">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://g2ex.top/2016/05/31/Power-Analysis-Attacks-on-Smart-Card/">
+
+
+
+
+
+  <title> 旁路之能量分析攻击总结 | G2EX </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?0056c67deccbe6617d059b40d352195f";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">G2EX</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="https://g2ex.top/2016/05/31/Power-Analysis-Attacks-on-Smart-Card/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="Yaming Gong">
+    <meta itemprop="description" content>
+    <meta itemprop="image" content="/avatar.png">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="G2EX">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="G2EX" src>
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                旁路之能量分析攻击总结
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-05-31T21:00:00+00:00">
+                2016-05-31
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <a href="/2016/05/31/Power-Analysis-Attacks-on-Smart-Card/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2016/05/31/Power-Analysis-Attacks-on-Smart-Card/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="一、理解旁路攻击"><a href="#一、理解旁路攻击" class="headerlink" title="一、理解旁路攻击"></a>一、理解旁路攻击</h2><p>在前几年的工作里，对智能卡（或者说芯片卡、CPU 卡，比如 SIM 卡、芯片银行卡、社保卡等，另外 USBKEY 也属于智能卡的一种）的安全研究比较多，主要攻击智能卡中加密算法，获取算法密钥，验证智能卡安全性。用到的攻击手法就是本文要说的旁路攻击，英文名称是 Side Channel Attacks，也有的翻译成“侧信道攻击”或者“边道攻击”，它们都是一个意思。</p>
+<p>首先谈谈我对旁路攻击中“旁路”的理解，不论是对硬件、系统还是网络的攻击，最方便也是最直接的攻击手段是直接读取其中的信息，比如账号的密码。若此路不通，则需另辟他路，这种通过“他路”进行攻击的手段就可以叫做“旁路”攻击。</p>
+<p>以破解某人邮箱为例，如果碰巧通过社工库找到了他泄露过的密码而撞库成功，这是最理想的。而通过 XSS 获取到了其登录邮箱的 Cookie 从而登录其邮箱的途径，可以理解为“旁路”。</p>
+<p>再看看下面这张图，直接拿到锁的钥匙打开抽屉，是最理想的攻击途径。而通过图中的方法拿到被锁抽屉中的东西，就是“旁路”攻击了。<a href="https://www.google.com/search?q=%E7%A0%94%E7%A9%B6%E4%BA%BA%E5%91%98%E5%88%A9%E7%94%A8%E6%97%81%E8%B7%AF%E6%94%BB%E5%87%BB%E7%AA%83%E5%8F%96Android%E5%92%8CiOS%E4%B8%8A%E7%9A%84%E5%AF%86%E9%92%A5" title="研究人员利用旁路攻击窃取Android和iOS上的密钥" target="_blank" rel="noopener">《研究人员利用旁路攻击窃取Android和iOS上的密钥》</a>的这篇文章，也是属于旁路攻击的一种。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/gymgle/imgur/2016-05-31_power_analysis.webp" alt="旁路攻击举例" title="旁路举例"></p>
+<p>对智能卡的旁路攻击，是上世纪 90 年代末提出的。攻击者在智能卡的 VCC 或 GND 上串联一个小的电阻，使用示波器测量该电阻上的电压降，测量的电压降和芯片的能量消耗成正比，因此可以将电压降作为能量消耗来处理，并将对应的曲线波形视为功耗曲线。同样的道理，探测电磁变化获取智能卡芯片的功耗曲线也能进行攻击。这类旁路攻击叫做能量分析攻击（Power Analysis Attack）。攻击设备的物理连接示意图如下所示：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/gymgle/imgur/2016-05-31_161613.webp" alt="能量分析攻击物理连接示意图" title="能量分析攻击物理连接图"></p>
+<p>能量分析攻击的基本思想是<strong>通过分析密码设备的能量消耗获得其密钥。</strong>这种攻击利用了两类能量消耗依赖性：<strong>数据依赖性和操作依赖性。</strong>因为<strong>密码设备的瞬时能量消耗依赖于设备所处理的数据和设备所执行的操作。</strong></p>
+<p>现在进行旁路攻击需要一套价格不菲的攻击设备。经过十几年的发展，攻击设备厂商也不再局限在国外，源于上海交大的观源信息算是国内厂商的后起之秀，郁昱教授在多个安全大会上也演示了如何克隆 SIM 卡。</p>
+<h2 id="二、能量分析攻击"><a href="#二、能量分析攻击" class="headerlink" title="二、能量分析攻击"></a>二、能量分析攻击</h2><h3 id="1-定义"><a href="#1-定义" class="headerlink" title="1. 定义"></a>1. 定义</h3><p>能量分析攻击又分为<strong>简单能量分析攻击</strong>和<strong>差分能量分析攻击</strong>。在《智能卡安全与设计》一书中对这两种攻击方法的描述比较准确：</p>
+<blockquote>
+<p>简单功耗分析（Simlpe Power Analysis, SPA）攻击：从密码芯片运算的功耗波形上能够直接找出一切密钥信息的攻击方法。因为在芯片中，密钥位为 0 时运算的功耗和密钥位为 1 时运算的功耗存在差异，通过这样的差异分析出密钥位的值，按照一定规律组合得到完整的密钥。</p>
+</blockquote>
+<p>以下图为例，使用 SPA 就可以从芯片的功耗曲线中可以读出十六进制的关键数据。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/gymgle/imgur/2016-05-31_161853.webp" alt="SPA图示" title="SPA图示"></p>
+<blockquote>
+<p>差分功耗分析（Differential Power Analysis, DPA）攻击：需要知道算法的明文（输入）和密文（输出），通过对一系列的功耗轨迹进行分析和计算，重现加密密钥的攻击方法。</p>
+</blockquote>
+<p>DPA 的主要任务在于找出密钥参与运算时的功耗和密钥位的相关性，而不是直接得到密钥位的值。这个解释起来比较复杂，下面以分析 DES 算法为例讲解 DPA 的原理。</p>
+<h3 id="2-DPA-攻击原理"><a href="#2-DPA-攻击原理" class="headerlink" title="2. DPA 攻击原理"></a>2. DPA 攻击原理</h3><p>在《能量分析攻击》一书中，作者以 AES 为例分析了 DPA 原理和攻击过程，下面以 DES 算法为例进行说明。</p>
+<p>首先分析一次 DES 加密操作的功耗与明文第一个字节最高有效位 <code>MSB</code> 之间的依赖关系，记该比特为 <code>d</code>。为了确定 <code>d</code> 对功耗的影响，测量芯片分别加密 1000 个随机明文时的功耗。因为明文是随机的，<code>d</code> 也就是随机的，这样可以获得约 500 条 <code>d = 0</code> 时加密操作的功耗曲线，以及约 500 条 <code>d = 1</code> 时加密操作的功耗曲线。</p>
+<p>确定 <code>d</code> 对功耗影响的一个简单方法就是计算平均值之差，即分别计算所有 <code>d = 0</code> 的功耗曲线的平均值与所有 <code>d = 1</code> 的功耗曲线的平均值，获得一条 <code>d = 0</code> 的平均功耗曲线和一条 <code>d = 1</code> 的平均功耗曲线。接下来，将这两条平均功耗曲线做减法运算，得到一条功耗曲线，称为差分功耗曲线。</p>
+<p>观察差分功耗曲线，几乎这段时间内的所有时刻，其电压值都接近于零，但有几个特别突出的尖峰。这些尖峰表明了芯片功耗依赖于 <code>d</code> 中的那些时刻。在这一时刻，芯片所执行的指令要么直接对 <code>d</code> 进行处理，要么所处理的某些数据依赖于 <code>d</code>。在这一时刻，<code>d</code> 的相关性是最高的。</p>
+<p>芯片的运算会直接或间接地依赖于 <code>d</code> 的指令，通过对上面尖峰出现位置的分析，说明芯片的能量消耗中包含它所处理数据的信息，在能量分析中利用这一特性，就可以确定出芯片使用的密钥。</p>
+<h3 id="3-DPA-分析过程"><a href="#3-DPA-分析过程" class="headerlink" title="3. DPA 分析过程"></a>3. DPA 分析过程</h3><p>DES 加密共 16 轮，有效密钥 56 位，这 56 位密钥生成 16 轮子密钥参与各轮次的运算，每轮子密钥 48 位。如果已知 DES 前两轮或最后两轮的子密钥，就可以恢复出 DES 完整的密钥。</p>
+<p>这样一来，我们的目标拆分为攻击前两轮（或最后两轮）的子密钥。</p>
+<p>先来分析第一轮的过程。32 位明文经过扩展变换后与 48 位轮密钥进行异或，然后进入 S 盒。S 盒共 8 个，每个 6 位输入，4 位输出。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/gymgle/imgur/2016-05-31_DPA_on_DES.webp" alt="S盒" title="DES S盒"></p>
+<p>我们关注第一个 S 盒：<code>S1</code>，<code>S1</code> 的每一个输出位都可以通过明文的 6 位和密钥 6 位来获得。将参与 <code>S1</code> 运算的 6 位明文记为 <code>p</code>，6 位密钥记为 <code>k</code>。因此，<code>S1</code> 操作对应的输出可以记为 <code>S(p⊕k)</code>。在所给出的攻击实例中，都利用了如下事实：芯片在某个时刻的能量消耗依赖于这一输出字节的最高有效位 <code>v</code>，其中，<code>v = MSB(S(p⊕k))</code>。</p>
+<p>进行这个攻击与之前已经完成的对值 <code>d</code> 的分析过程非常相似。首先，加密 1000 个随机明文，记录相应的能量消耗。此后，将功耗曲线划分为两组：<code>v = 1</code> 的功耗曲线与 <code>v = 0</code> 的功耗曲线。与先前已经完成对明文比特d的分析不同，此时中间值 <code>v</code> 依赖于密钥字节 <code>k</code>。</p>
+<p>最初，攻击者并不知道 <code>k</code>。然而，攻击者可以对 <code>k</code> 进行猜测，实际上，<code>k</code>只有 64 个可能值。因此，攻击者能够很容易地遍历所有可能的 <code>k</code> 值，并使用这些值来计算 <code>v</code>。在实际的攻击中，这意味着首先猜测 <code>k = 0</code>。基于这一猜测，对于 1000 次加密操作的每一次，分别计算对应的 <code>v</code>。然后，攻击者分别计算 <code>v = 1</code> 的功耗曲线平均值和 <code>v = 0</code> 的功耗曲线平均值。这样就可以绘制出两条平均功耗曲线之间的差异曲线。对于所有其他 63 个可能的密钥值，重复同样的过程。这样，攻击者就可以获得 64 个差异曲线。对于每一个密钥猜测，都有一个与之对应的差分曲线。<br>在 64 个猜测中，当猜中 <code>k</code> 时，就已经正确计算出了 <code>v</code>。因此，该密钥猜测对应的差分曲线实际上说明了芯片能量消耗对 <code>v</code> 的依赖性。由于这种依赖性的存在，对应的差分曲线中就会有明显的尖峰。</p>
+<p>一个重要的问题是：如果基于一个错误的密钥猜测计算 <code>v</code>，会出现什么情况呢？这种情况下，所计算出的v值将功耗曲线划分为两组（<code>v = 1</code> 和 <code>v = 0</code>），但是芯片没有处理这些计算所得到的 <code>v</code> 值。因此，能量消耗就不会依赖于这些值，所以对应的差分曲线中就不会有大尖峰出现。</p>
+<p>同理，依次猜测 S2、S3……S8 参与运算的密钥位，就可以获得第一轮的 48 位子密钥。</p>
+<p>再同理获得第二轮子密钥，然后组合这两轮子密钥还原为 DES 完整密钥。</p>
+<p>使用这种策略的攻击称为差分能量分析（DPA）。这种攻击利用了这样一个事实：<strong>密钥设备的能量消耗依赖于算法执行过程中所处理的中间值</strong>。上面的攻击分析中，已经利用过这样一个事实：芯片的能量消耗依赖于第 1 轮中 S 盒的输出数据的 MSB。同样，攻击者也可以利用其他的中间值来实施攻击。特别地，攻击者可以利用依赖于其他密钥字节的中间值来实施攻击，这样就可以很容易地恢复出完整的 DES 密钥。</p>
+<h3 id="4-其他说明"><a href="#4-其他说明" class="headerlink" title="4. 其他说明"></a>4. 其他说明</h3><p>对称算法与非对称算法的 DPA 攻击原理不同，CRT 方式实现的 RSA 算法攻击的是 CRT 的组合阶段。</p>
+<p>另外，除 SPA 和 DPA 之外，其实还有一种叫做<code>错误注入</code>（DFA）的攻击手段，也属于能量分析攻击，这里不再介绍。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
+<li>张之津等著《智能卡安全与设计》，清华大学出版社</li>
+<li>[奥]Stefan Mangard 等著，冯登国等译《能量分析攻击》科学出版社</li>
+</ol>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/SCA/" rel="tag"># SCA</a>
+          
+            <a href="/tags/SPA/" rel="tag"># SPA</a>
+          
+            <a href="/tags/DPA/" rel="tag"># DPA</a>
+          
+            <a href="/tags/Smart-Card/" rel="tag"># Smart Card</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/05/20/Tips-on-Chinternet/" rel="next" title="我的科学上网技巧">
+                <i class="fa fa-chevron-left"></i> 我的科学上网技巧
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/09/09/My-Views-on-Blockchain-Scenarios/" rel="prev" title="关于区块链应用场景的思考">
+                关于区块链应用场景的思考 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/avatar.png" alt="Yaming Gong">
+          <p class="site-author-name" itemprop="name">Yaming Gong</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">63</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">102</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/gymgle" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://twitter.com/gymgle" target="_blank" title="Twitter">
+                  
+                    <i class="fa fa-fw fa-twitter"></i>
+                  
+                  Twitter
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/773662567" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  Weibo
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.flickr.com/photos/gymgle/" target="_blank" title="Flickr">
+                  
+                    <i class="fa fa-fw fa-flickr"></i>
+                  
+                  Flickr
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+          <div class="cc-license motion-element" itemprop="license">
+            <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" target="_blank">
+              <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons">
+            </a>
+          </div>
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、理解旁路攻击"><span class="nav-number">1.</span> <span class="nav-text">一、理解旁路攻击</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、能量分析攻击"><span class="nav-number">2.</span> <span class="nav-text">二、能量分析攻击</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-定义"><span class="nav-number">2.1.</span> <span class="nav-text">1. 定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-DPA-攻击原理"><span class="nav-number">2.2.</span> <span class="nav-text">2. DPA 攻击原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-DPA-分析过程"><span class="nav-number">2.3.</span> <span class="nav-text">3. DPA 分析过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-其他说明"><span class="nav-number">2.4.</span> <span class="nav-text">4. 其他说明</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">3.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy;  2012 - 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yaming Gong</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+    <script type="text/javascript">
+      var disqus_shortname = 'g2ex';
+      var disqus_identifier = '2016/05/31/Power-Analysis-Attacks-on-Smart-Card/';
+
+      var disqus_title = "旁路之能量分析攻击总结";
+
+
+      function run_disqus_script(disqus_script) {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      }
+
+      run_disqus_script('count.js');
+
+      
+        var disqus_config = function () {
+            this.page.url = disqus_url;
+            this.page.identifier = disqus_identifier;
+            this.page.title = disqus_title;
+        };
+        run_disqus_script('embed.js');
+      
+
+    </script>
+  
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

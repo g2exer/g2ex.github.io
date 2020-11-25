@@ -1,0 +1,772 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="Mac,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="G2EX" type="application/atom+xml">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0">
+
+
+
+
+
+
+<meta name="description" content="关于原版OS X Mountain Lion 10.8.5Mac OS X Mountain Lion 10.8.5作为Mountain Lion的最后一个稳定版本值得我们收藏。可能大家有所不知，10.8.5版本是分为两个Build的，一个是在2013年9月13日发布的10.8.5 Build 12F37，另一个是2013年10月3日发布的10.8.5 Build 12F45。也就是说，10.8.">
+<meta name="keywords" content="Mac">
+<meta property="og:type" content="article">
+<meta property="og:title" content="VMware Workstation 10安装Mac OS X Mountain Lion 10.8.5">
+<meta property="og:url" content="https://g2ex.top/2014/10/12/VMware-Workstation-10-Install-Mac-OS-X-Mountain-Lion-10.8.5/index.html">
+<meta property="og:site_name" content="G2EX">
+<meta property="og:description" content="关于原版OS X Mountain Lion 10.8.5Mac OS X Mountain Lion 10.8.5作为Mountain Lion的最后一个稳定版本值得我们收藏。可能大家有所不知，10.8.5版本是分为两个Build的，一个是在2013年9月13日发布的10.8.5 Build 12F37，另一个是2013年10月3日发布的10.8.5 Build 12F45。也就是说，10.8.">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-11-25T02:09:19.684Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="VMware Workstation 10安装Mac OS X Mountain Lion 10.8.5">
+<meta name="twitter:description" content="关于原版OS X Mountain Lion 10.8.5Mac OS X Mountain Lion 10.8.5作为Mountain Lion的最后一个稳定版本值得我们收藏。可能大家有所不知，10.8.5版本是分为两个Build的，一个是在2013年9月13日发布的10.8.5 Build 12F37，另一个是2013年10月3日发布的10.8.5 Build 12F45。也就是说，10.8.">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://g2ex.top/2014/10/12/VMware-Workstation-10-Install-Mac-OS-X-Mountain-Lion-10.8.5/">
+
+
+
+
+
+  <title> VMware Workstation 10安装Mac OS X Mountain Lion 10.8.5 | G2EX </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?0056c67deccbe6617d059b40d352195f";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">G2EX</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="https://g2ex.top/2014/10/12/VMware-Workstation-10-Install-Mac-OS-X-Mountain-Lion-10.8.5/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="Yaming Gong">
+    <meta itemprop="description" content>
+    <meta itemprop="image" content="/avatar.png">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="G2EX">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="G2EX" src>
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                VMware Workstation 10安装Mac OS X Mountain Lion 10.8.5
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2014-10-12T00:00:00+00:00">
+                2014-10-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <a href="/2014/10/12/VMware-Workstation-10-Install-Mac-OS-X-Mountain-Lion-10.8.5/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2014/10/12/VMware-Workstation-10-Install-Mac-OS-X-Mountain-Lion-10.8.5/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="关于原版OS-X-Mountain-Lion-10-8-5"><a href="#关于原版OS-X-Mountain-Lion-10-8-5" class="headerlink" title="关于原版OS X Mountain Lion 10.8.5"></a>关于原版OS X Mountain Lion 10.8.5</h2><p>Mac OS X Mountain Lion 10.8.5作为Mountain Lion的最后一个稳定版本值得我们收藏。可能大家有所不知，10.8.5版本是分为两个Build的，一个是在2013年9月13日发布的<code>10.8.5 Build 12F37</code>，另一个是2013年10月3日发布的<code>10.8.5 Build 12F45</code>。也就是说，<code>10.8.5 Build 12F45</code>才是Mountain Lion的最终版本。<a href="https://en.wikipedia.org/wiki/OS_X_Mountain_Lion" target="_blank" rel="noopener"><code>OS X Mountain Lion的维基百科</code></a></p>
+<p>不幸的是，网友们和论坛中分享的<a href="http://bbs.pcbeta.com/viewthread-1404580-1-1.html" target="_blank" rel="noopener">OS X Mountain Lion 10.8.5 正式版 原版完整DMG安装镜像</a>大多数是Build 12F37版本（从发帖日期就可以看出来），网上搜索到的种子文件也是Build 12F37的种子。要想下载原版Build 12F45，可以搜索<code>OSX1085-12F45-ESD.dmg</code>，或者从这里下载：<a href="http://pan.baidu.com/s/1f68Vv" target="_blank" rel="noopener">http://pan.baidu.com/s/1f68Vv</a></p>
+<h2 id="怎么知道下载了哪个版本？"><a href="#怎么知道下载了哪个版本？" class="headerlink" title="怎么知道下载了哪个版本？"></a>怎么知道下载了哪个版本？</h2><p>通过文件的MD5等校验值来辨别。使用软件：<a href="http://keir.net/hash.html" target="_blank" rel="noopener">Hash</a>或者<a href="http://implbits.com/products/hashtab/" target="_blank" rel="noopener">HashTab</a>。</p>
+<p><strong>OS X Mountain Lion 10.8.5 Build 12F37.dmg 信息如下：</strong><br>大小: 4469250353 字节<br>MD5: 5568B4DDE00A64F765EF00858B538078<br>SHA1: ECF68C2119C71825839D2A58E0D619E9CCF7C026<br>CRC32: F4DFCE4D<br><strong>从中提取出的InstallESD.dmg：</strong><br>MD5: 2C77151BE45C820B02A9ACE05434693D<br>SHA1: 2919B519142E2119197BFFD678F15F603E84970F<br>CRC32: A9DCAE18</p>
+<p><strong>OSX1085-12F45-ESD.dmg 信息如下：</strong><br>大小: 4448808132 字节<br>MD5: 3FCEBFC81D00767D1ACEF1CB166F88CC<br>SHA1: 98E52D0FC443940265780539A311833EE5814DDD<br>CRC32: C82F14C1<br><strong>从中提取出的InstallESD.dmg：</strong><br>大小: 4434015077 字节<br>MD5: 69FA8DBBC2AA6668534CC863AC9B9F28<br>SHA1: B8FA63882F06B52EB73F6ECC6661858DE32E70E9<br>CRC32: ED788FDE</p>
+<h2 id="VMware安装OS-X-10-8-5注意事项"><a href="#VMware安装OS-X-10-8-5注意事项" class="headerlink" title="VMware安装OS X 10.8.5注意事项"></a>VMware安装OS X 10.8.5注意事项</h2><p>这里使用的VMware Workstation版本是10.0.3，VMware 9也可以。</p>
+<ol>
+<li><p>电脑CPU需要支持虚拟化技术，同时BIOS开启Virtualization Technology选项。使用<a href="https://www.grc.com/securable.htm" target="_blank" rel="noopener"><code>securable</code></a>软件来检测。<br>对于Intel CPU可以在这里查看自己的型号是否支持虚拟化技术：<a href="http://ark.intel.com/Products/VirtualizationTechnology" target="_blank" rel="noopener">http://ark.intel.com/Products/VirtualizationTechnology</a></p>
+</li>
+<li><p>安装<code>unlock-all-v120</code>，为Vmware Workstation添加Mac OS X支持。</p>
+</li>
+<li><p>制作原版InstallESD.ISO镜像</p>
+</li>
+</ol>
+<p><strong>Build 12F45镜像的制作方法：</strong><br>① 使用7-zip打开<code>OSX1085-12F45-ESD.dmg</code>，提取出<code>InstallESD.dmg</code>；
+② 使用UltraISO，把<code>InstallESD.dmg</code>转换为<code>标准ISO</code>文件；<br><strong>Build 12F37镜像的制作方法：</strong><br>① 使用7-zip打开<code>Install OS X Mountain Lion 10.8.5 Build 12F37.dmg</code>，提取出<code>2.hfs</code>；
+② 使用7-zip打开<code>2.hfs</code>，提取出<code>InstallESD.dmg</code>；
+③ 使用UltraISO，把<code>InstallESD.dmg</code>转换为<code>标准ISO</code>文件；</p>
+<ol start="4">
+<li><p>VMware中安装OS X<br>Vmware Workstation新建虚拟机向导，使用自定义，选Apple Mac OS X 10.8，内存大于2G，虚拟磁盘存储为单个文件，其余可以全部默认。把换后的<code>InstallESD.dmg</code>加载到VMware的CD/DVD中，开始安装直至完成。</p>
+</li>
+<li><p>安装VMware Tools<br>找到VMware Workstation安装目录下的<code>darwin.iso</code>，加载到VMware的CD/DVD中，在OS X虚拟机中安装VMware Tools。</p>
+</li>
+</ol>
+<h2 id="附件下载"><a href="#附件下载" class="headerlink" title="附件下载"></a>附件下载</h2><blockquote>
+<p><code>securable</code>下载链接：<a href="http://pan.baidu.com/s/1hqxf91i" target="_blank" rel="noopener">http://pan.baidu.com/s/1hqxf91i</a> 密码：<code>wpbs</code><br><code>unlock-all-v120.zip</code>下载链接：<a href="http://pan.baidu.com/s/1o69eCUe" target="_blank" rel="noopener">http://pan.baidu.com/s/1o69eCUe</a> 密码：<code>7jsl</code><br><code>Hash v1.04</code>下载链接：<a href="http://pan.baidu.com/s/1c0my352" target="_blank" rel="noopener">http://pan.baidu.com/s/1c0my352</a> 密码：<code>2hia</code><br><code>HashTab v5.2.0.14</code>下载链接：<a href="http://pan.baidu.com/s/1pJ2rbqN" target="_blank" rel="noopener">http://pan.baidu.com/s/1pJ2rbqN</a> 密码：<code>yuta</code></p>
+</blockquote>
+<h2 id="其他问题"><a href="#其他问题" class="headerlink" title="其他问题"></a>其他问题</h2><p>问题1：不能下载安装OS X所需的附加组件 / 无法下载安装MAC OS X所需的其他组件<br>原因之一：OS X 10.8.5安装镜像有问题，请确认下载的原版镜像或者从中提取的<code>InstallESD.dmg</code>MD5是否正确。如果使用U盘安装，确认镜像没问题后换一个U盘试试。<br>原因之二：苹果系统版本不对。</p>
+<h2 id="扩展阅读"><a href="#扩展阅读" class="headerlink" title="扩展阅读"></a>扩展阅读</h2><p>VMware Workstation 9安装MAC OS 10.8全程图解：<a href="http://bbs.pcbeta.com/forum.php?mod=viewthread&amp;tid=1130227" target="_blank" rel="noopener">http://bbs.pcbeta.com/forum.php?mod=viewthread&amp;tid=1130227</a></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Mac/" rel="tag"># Mac</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2014/10/09/VC6-Multi-Thread-Program/" rel="next" title="VC6多线程编程">
+                <i class="fa fa-chevron-left"></i> VC6多线程编程
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2014/12/01/Basic-Python-Notes/" rel="prev" title="Python基础笔记">
+                Python基础笔记 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/avatar.png" alt="Yaming Gong">
+          <p class="site-author-name" itemprop="name">Yaming Gong</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">63</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">102</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/gymgle" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://twitter.com/gymgle" target="_blank" title="Twitter">
+                  
+                    <i class="fa fa-fw fa-twitter"></i>
+                  
+                  Twitter
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/773662567" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  Weibo
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.flickr.com/photos/gymgle/" target="_blank" title="Flickr">
+                  
+                    <i class="fa fa-fw fa-flickr"></i>
+                  
+                  Flickr
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+          <div class="cc-license motion-element" itemprop="license">
+            <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" target="_blank">
+              <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons">
+            </a>
+          </div>
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#关于原版OS-X-Mountain-Lion-10-8-5"><span class="nav-number">1.</span> <span class="nav-text">关于原版OS X Mountain Lion 10.8.5</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#怎么知道下载了哪个版本？"><span class="nav-number">2.</span> <span class="nav-text">怎么知道下载了哪个版本？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#VMware安装OS-X-10-8-5注意事项"><span class="nav-number">3.</span> <span class="nav-text">VMware安装OS X 10.8.5注意事项</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#附件下载"><span class="nav-number">4.</span> <span class="nav-text">附件下载</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他问题"><span class="nav-number">5.</span> <span class="nav-text">其他问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#扩展阅读"><span class="nav-number">6.</span> <span class="nav-text">扩展阅读</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy;  2012 - 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yaming Gong</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+    <script type="text/javascript">
+      var disqus_shortname = 'g2ex';
+      var disqus_identifier = '2014/10/12/VMware-Workstation-10-Install-Mac-OS-X-Mountain-Lion-10.8.5/';
+
+      var disqus_title = "VMware Workstation 10安装Mac OS X Mountain Lion 10.8.5";
+
+
+      function run_disqus_script(disqus_script) {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      }
+
+      run_disqus_script('count.js');
+
+      
+        var disqus_config = function () {
+            this.page.url = disqus_url;
+            this.page.identifier = disqus_identifier;
+            this.page.title = disqus_title;
+        };
+        run_disqus_script('embed.js');
+      
+
+    </script>
+  
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

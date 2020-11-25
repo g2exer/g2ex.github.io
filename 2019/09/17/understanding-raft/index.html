@@ -1,0 +1,777 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="raft,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="G2EX" type="application/atom+xml">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0">
+
+
+
+
+
+
+<meta name="description" content="0x00 简介最近两年工作中对区块链技术接触较多，接下来可能要告一段落了。期间对 go-ethereum 进行过联盟链改造，使用 Raft 共识算法把以太坊的 TPS 提升到了 1K+。这里总结一下 Raft 算法，既是对自己经历对一种记录，也算是对他人对帮助。 Raft 算法是一个非常好理解（相比 Paxos 算法来说），也是一个非常受欢迎的共识算法，比如常用的服务发现、共享配置以及一致性保障的">
+<meta name="keywords" content="raft">
+<meta property="og:type" content="article">
+<meta property="og:title" content="理解 Raft 分布式共识算法">
+<meta property="og:url" content="https://g2ex.top/2019/09/17/understanding-raft/index.html">
+<meta property="og:site_name" content="G2EX">
+<meta property="og:description" content="0x00 简介最近两年工作中对区块链技术接触较多，接下来可能要告一段落了。期间对 go-ethereum 进行过联盟链改造，使用 Raft 共识算法把以太坊的 TPS 提升到了 1K+。这里总结一下 Raft 算法，既是对自己经历对一种记录，也算是对他人对帮助。 Raft 算法是一个非常好理解（相比 Paxos 算法来说），也是一个非常受欢迎的共识算法，比如常用的服务发现、共享配置以及一致性保障的">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-11-25T02:09:19.688Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="理解 Raft 分布式共识算法">
+<meta name="twitter:description" content="0x00 简介最近两年工作中对区块链技术接触较多，接下来可能要告一段落了。期间对 go-ethereum 进行过联盟链改造，使用 Raft 共识算法把以太坊的 TPS 提升到了 1K+。这里总结一下 Raft 算法，既是对自己经历对一种记录，也算是对他人对帮助。 Raft 算法是一个非常好理解（相比 Paxos 算法来说），也是一个非常受欢迎的共识算法，比如常用的服务发现、共享配置以及一致性保障的">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://g2ex.top/2019/09/17/understanding-raft/">
+
+
+
+
+
+  <title> 理解 Raft 分布式共识算法 | G2EX </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?0056c67deccbe6617d059b40d352195f";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">G2EX</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="https://g2ex.top/2019/09/17/understanding-raft/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="Yaming Gong">
+    <meta itemprop="description" content>
+    <meta itemprop="image" content="/avatar.png">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="G2EX">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="G2EX" src>
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                理解 Raft 分布式共识算法
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-09-17T20:30:00+00:00">
+                2019-09-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <a href="/2019/09/17/understanding-raft/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/09/17/understanding-raft/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="0x00-简介"><a href="#0x00-简介" class="headerlink" title="0x00 简介"></a>0x00 简介</h2><p>最近两年工作中对区块链技术接触较多，接下来可能要告一段落了。期间对 go-ethereum 进行过联盟链改造，使用 Raft 共识算法把以太坊的 TPS 提升到了 1K+。这里总结一下 Raft 算法，既是对自己经历对一种记录，也算是对他人对帮助。</p>
+<p>Raft 算法是一个非常好理解（相比 Paxos 算法来说），也是一个非常受欢迎的共识算法，比如常用的服务发现、共享配置以及一致性保障的 etcd 和 Counsul 都使用了 Raft 算法来保证一致性。</p>
+<h2 id="0x01-什么是分布式共识算法"><a href="#0x01-什么是分布式共识算法" class="headerlink" title="0x01 什么是分布式共识算法"></a>0x01 什么是分布式共识算法</h2><p>在分布式计算领域中有一个非常有名的 CAP 定理：一个分布式系统最多只能同时满足一致性（Consistency）、可用性（Availability）和分区容忍性（Partition tolerance）这三项中的两项。</p>
+<p>一致性是指节点数据的一致，即所有节点在同一时间的数据完全一致。如果细分的话，一致性又可以分为强一致、弱一致和最终一致。比如我们经常使用的多副本关系型数据库满足的是强一致性，又因为要同时满足高可用，那么就弱化了分区容忍性（可以使用简单的网络拓扑来减少分区出错的可能）；公有的比特币、以太坊网络是属于最终一致，因为它们必须优先满足可用性和分区容忍性。</p>
+<p>分布式网络中所有节点要想达成一致，就需要一个算法来促成这个一致，这个算法就是共识算法。我们常听说的 挖矿、PoS、DPoS、PBFT、Raft 都属于解决一致性的算法。</p>
+<h2 id="0x02-理解-Raft"><a href="#0x02-理解-Raft" class="headerlink" title="0x02 理解 Raft"></a>0x02 理解 Raft</h2><p>Raft 中，节点通过心跳消息来保持通信，一个节点只会处于以下三种状态中的一种：</p>
+<ul>
+<li>Follower（跟从者）</li>
+<li>Candidate（候选人）</li>
+<li>Leader（领导者）</li>
+</ul>
+<p>最开始时，所有的节点都是 follower，如果 follower 收不到 leader 的心跳消息，那么 follower 会变为 candidate，并向其他节点发起投票，如果该 candidate 节点收到了半数以上的选票（包括投给自己的一票），那么它就当选为新的 leader。这个过程被称为 <strong>leader 选举</strong>的过程。</p>
+<p>接下来，leader 节点将带领所有节点对分布式网络中对数据更改达成一致，这个过程被称为<strong>日志同步</strong>。</p>
+<p>日志同步的过程如下：</p>
+<ol>
+<li>Leader 收到客户端到数据提交请求，leader 把请求作为一个条目（entry）加入到它到日志中，这个时候它不会立刻更新数据；</li>
+<li>Leader 向所有的 followers 节点发送这个条目，这个发送的过程被称为 Append Entries；</li>
+<li>Followers 节点收到 leader 的 Append Entries 请求后，向 leader 回复条目响应；</li>
+<li>Leader 节点收集了半数以上的条目响应后，向客户端响应条目已确认，这时它才会更新自身节点的数据，同时向所有 fwllowers 节点发送条目确认的消息；</li>
+</ol>
+<h2 id="0x03-特殊情况"><a href="#0x03-特殊情况" class="headerlink" title="0x03 特殊情况"></a>0x03 特殊情况</h2><p><strong>Leader 选举过程中，如果没有收到半数以上的选票，该怎么办？</strong></p>
+<p>Raft 中，有两种超时机制：选举超时和心跳超时。</p>
+<p>每个 follower 会随机生成一个选举超时时间。任意节点当自身的选举超时时间结束后还没有收到 leader 的消息，那么它就重置这轮选举，变为 candidate 向其他节点发起新一轮投票。这样，最终总会选举出一个 leader 节点来。</p>
+<p><strong>正常运行过程中，如果 leader 节点挂掉，会出现什么情况？</strong></p>
+<p>这种情况下，会用到心跳超时机制。当 followers 在心跳超时后仍旧没有收到 leader 节点的心跳消息，那么 followers 节点就会发起新一轮投票，直到选举出新的 leader 来。</p>
+<p><strong>网络分区的情况下会发生什么？</strong></p>
+<p>网络故障导致导致节点被分隔到多个不连通的区域，在被隔离的区域中又会触发新的 leader 选举，对于隔离区域中包含半数以上的节点，选举就可能成功。当网络恢复后，followers 接受最大任期（term）和最新日志的 leader。这个思路蕾丝比特币、以太坊网络分叉后以最长区块为准的解决方案，确保了最终一致性。</p>
+<h2 id="0x04-Raft-参考资料"><a href="#0x04-Raft-参考资料" class="headerlink" title="0x04 Raft 参考资料"></a>0x04 Raft 参考资料</h2><ul>
+<li>这里是一个不错的 Raft 算法演示网站，非常推荐用它演练一遍，增加对 Raft 的理解 <a href="http://thesecretlivesofdata.com/raft" target="_blank" rel="noopener">http://thesecretlivesofdata.com/raft</a></li>
+<li>Raft 算法的 Github 主页，里边也包含了一个可视化演示 <a href="https://raft.github.io" target="_blank" rel="noopener">https://raft.github.io</a></li>
+<li>Raft 论文 <a href="https://raft.github.io/raft.pdf" target="_blank" rel="noopener">https://raft.github.io/raft.pdf</a></li>
+<li>Raft 各种语言的实现 <a href="https://raft.github.io/#implementations" target="_blank" rel="noopener">https://raft.github.io/#implementations</a></li>
+<li>这里是对 Raft 算法对详解 <a href="https://zhuanlan.zhihu.com/p/32052223" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/32052223</a></li>
+</ul>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/raft/" rel="tag"># raft</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/06/28/hexo-with-travis-ci/" rel="next" title="使用 Travis 自动化部署 Hexo Blog">
+                <i class="fa fa-chevron-left"></i> 使用 Travis 自动化部署 Hexo Blog
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/04/25/timelinejs/" rel="prev" title="如何拥有一个漂亮的故事线">
+                如何拥有一个漂亮的故事线 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/avatar.png" alt="Yaming Gong">
+          <p class="site-author-name" itemprop="name">Yaming Gong</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">63</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">102</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/gymgle" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://twitter.com/gymgle" target="_blank" title="Twitter">
+                  
+                    <i class="fa fa-fw fa-twitter"></i>
+                  
+                  Twitter
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/773662567" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  Weibo
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.flickr.com/photos/gymgle/" target="_blank" title="Flickr">
+                  
+                    <i class="fa fa-fw fa-flickr"></i>
+                  
+                  Flickr
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+          <div class="cc-license motion-element" itemprop="license">
+            <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" target="_blank">
+              <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons">
+            </a>
+          </div>
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#0x00-简介"><span class="nav-number">1.</span> <span class="nav-text">0x00 简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x01-什么是分布式共识算法"><span class="nav-number">2.</span> <span class="nav-text">0x01 什么是分布式共识算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x02-理解-Raft"><span class="nav-number">3.</span> <span class="nav-text">0x02 理解 Raft</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x03-特殊情况"><span class="nav-number">4.</span> <span class="nav-text">0x03 特殊情况</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x04-Raft-参考资料"><span class="nav-number">5.</span> <span class="nav-text">0x04 Raft 参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy;  2012 - 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yaming Gong</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+    <script type="text/javascript">
+      var disqus_shortname = 'g2ex';
+      var disqus_identifier = '2019/09/17/understanding-raft/';
+
+      var disqus_title = "理解 Raft 分布式共识算法";
+
+
+      function run_disqus_script(disqus_script) {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      }
+
+      run_disqus_script('count.js');
+
+      
+        var disqus_config = function () {
+            this.page.url = disqus_url;
+            this.page.identifier = disqus_identifier;
+            this.page.title = disqus_title;
+        };
+        run_disqus_script('embed.js');
+      
+
+    </script>
+  
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

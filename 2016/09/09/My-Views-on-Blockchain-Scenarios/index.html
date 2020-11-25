@@ -1,0 +1,765 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="Blockchain,Bitcoin,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="G2EX" type="application/atom+xml">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0">
+
+
+
+
+
+
+<meta name="description" content="读完本文大约需要 6 分钟  1. 区块链应用场景的思考根据最近对比特币和区块链技术的学习，首先提出自己的两个结论： 第一，从技术角度，区块链涉及到了多领域范畴，包括了分布式、存储、密码学、心理学、经济学、博弈论、网络协议等，归根结底，这些技术最终要解决的问题，是信任的问题，即区块链技术能够在不信任的个体或组织之间建立信任关系。因此，对于某一应用场景是否适合用区块链技术解决，需要考虑的最根本的">
+<meta name="keywords" content="Blockchain,Bitcoin">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关于区块链应用场景的思考">
+<meta property="og:url" content="https://g2ex.top/2016/09/09/My-Views-on-Blockchain-Scenarios/index.html">
+<meta property="og:site_name" content="G2EX">
+<meta property="og:description" content="读完本文大约需要 6 分钟  1. 区块链应用场景的思考根据最近对比特币和区块链技术的学习，首先提出自己的两个结论： 第一，从技术角度，区块链涉及到了多领域范畴，包括了分布式、存储、密码学、心理学、经济学、博弈论、网络协议等，归根结底，这些技术最终要解决的问题，是信任的问题，即区块链技术能够在不信任的个体或组织之间建立信任关系。因此，对于某一应用场景是否适合用区块链技术解决，需要考虑的最根本的">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/gymgle/imgur/2016-09-09_blockchain.webp">
+<meta property="og:updated_time" content="2020-11-25T02:09:19.688Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="关于区块链应用场景的思考">
+<meta name="twitter:description" content="读完本文大约需要 6 分钟  1. 区块链应用场景的思考根据最近对比特币和区块链技术的学习，首先提出自己的两个结论： 第一，从技术角度，区块链涉及到了多领域范畴，包括了分布式、存储、密码学、心理学、经济学、博弈论、网络协议等，归根结底，这些技术最终要解决的问题，是信任的问题，即区块链技术能够在不信任的个体或组织之间建立信任关系。因此，对于某一应用场景是否适合用区块链技术解决，需要考虑的最根本的">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/gymgle/imgur/2016-09-09_blockchain.webp">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://g2ex.top/2016/09/09/My-Views-on-Blockchain-Scenarios/">
+
+
+
+
+
+  <title> 关于区块链应用场景的思考 | G2EX </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?0056c67deccbe6617d059b40d352195f";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">G2EX</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="https://g2ex.top/2016/09/09/My-Views-on-Blockchain-Scenarios/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="Yaming Gong">
+    <meta itemprop="description" content>
+    <meta itemprop="image" content="/avatar.png">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="G2EX">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="G2EX" src>
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                关于区块链应用场景的思考
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-09-09T00:00:00+00:00">
+                2016-09-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <a href="/2016/09/09/My-Views-on-Blockchain-Scenarios/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2016/09/09/My-Views-on-Blockchain-Scenarios/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><img src="https://cdn.jsdelivr.net/gh/gymgle/imgur/2016-09-09_blockchain.webp" alt="此处输入图片的描述"></p>
+<blockquote>
+<p>读完本文大约需要 <strong>6</strong> 分钟</p>
+</blockquote>
+<h2 id="1-区块链应用场景的思考"><a href="#1-区块链应用场景的思考" class="headerlink" title="1. 区块链应用场景的思考"></a>1. 区块链应用场景的思考</h2><p>根据最近对比特币和区块链技术的学习，首先提出自己的两个结论：</p>
+<p>第一，从技术角度，区块链涉及到了多领域范畴，包括了分布式、存储、密码学、心理学、经济学、博弈论、网络协议等，归根结底，这些技术最终要解决的问题，是信任的问题，即<strong>区块链技术能够在不信任的个体或组织之间建立信任关系</strong>。因此，对于某一应用场景是否适合用区块链技术解决，需要考虑的最根本的问题就是<strong>这种应用场景是否需要区块链技术去建立一个信任机制</strong>。</p>
+<p>第二，区块链技术是如何建立起了信任呢？共识机制。单纯的提到区块链，只不过是一种数据结构，一种由「链」连接了「区块」组成的数据结构。而共识机制的引入，才能够让区块链上数据的变更得到各个节点的认同。也就是说，<strong>共识机制是区块链技术的核心</strong>。</p>
+<p>比特币的伟大之处在于，它设计了一种工作量证明（PoW）的共识机制，使得在匿名网络中（各节点之间不存在信任）最坏情况下（存在恶意节点）的信任机制得以建立。回到上面的第一点，比特币是目前应用区块链技术最好的场景，正是因为<strong>区块链技术解决了各个不互相信任的节点之间的信任问题</strong>。对于其他设想的应用场景，如果各个节点之间本来<strong>已经存在了信任关系，那么这种场景更适合使用传统技术来解决</strong>，而不是使用区块链技术。</p>
+<p>区块链技术现阶段还非常不成熟，无法替代传统技术，最根本的问题是上面提到的第二点，共识机制。共识机制的限制主要体现在性能和安全现阶段都还不能满足要求。</p>
+<h2 id="2-能源区块链的思考"><a href="#2-能源区块链的思考" class="headerlink" title="2. 能源区块链的思考"></a>2. 能源区块链的思考</h2><p>对于能源与区块链技术的结合，根据最近对电力相关知识的学习，该应用场景存在非常大的限制因素，尤其是在电力行业由国家垄断的中国：</p>
+<p>第一，<strong>信任机制</strong>。原有的用电场景下，个人对电网是完全信任（不信任也没有办法），因此区块链不适合改造原有的用电场景。新的场景设想是规划一个小型区域，区域内一部分家庭安装光伏发电设备，通过区块链的技术协议，区域内的家庭可以实现电能自由买卖，形成一个小型微网。在这种场景下，因为各家庭之间不存在信任关系，适合由区块链技术建立信任。</p>
+<p>第二，<strong>技术约束</strong>。目前可以查到的区块链技术与能源结合的试验是「美国两个布鲁克林居民用以太坊区块链互相进行能源直接交易」。这个试验①在两个家庭之间；②基于以太坊。没有结论表明区块链技术在两个家庭之间交易电能是否变得更加方便。在设想的未来场景中，一个小型区域内有多个家庭，那么就必然需要：<br>①实现了区块链技术的智能电表；<br>②基于公开链或联盟链。如果选择联盟链，需要可信第三方来维护区块链网络节点，让每个家庭去维护自己的节点不太现实；<br>③电力存储和分配。在国家电网中，电力是不需要存储的，事先安排配电是非常重要的环节，需要至少 24 小时预测用电量，根据预测值设定发电量。在设想的电力区块链场景中，需要引入电力存储，因为存储的电能不能百分之百转化，因此会有电能损耗。另一方面，是否需要引入配电，那就牵涉到一个可信第三方来维护；<br>④当遇到发电量无法满足区域内家庭用电时，这些家庭需要接入国家的电网用电，也就是说需要两套供电系统（两套电表）；<br>⑤用电安全的保障。人命关天，安全第一，由哪方来保障。</p>
+<p>第三，<strong>政策限制</strong>，这也是决定项目能否落地的最重要因素。中国目前的电力公司有国家电网和中国南方电网以及其他十几家地方电网公司，这些都是政府垄断性质的公司。《电力法》明确规定，只有电网公司才可以售电，除非得到政府对区块链技术试验的支持政策，否则就成了「非法售电」。在目前政策下，只能做到个人发电后售卖给电网公司，因为个人对电网是完全信任的，使用传统技术的优势要比区块链技术更大。</p>
+<h2 id="3-区块链其他应用场景的思考"><a href="#3-区块链其他应用场景的思考" class="headerlink" title="3. 区块链其他应用场景的思考"></a>3. 区块链其他应用场景的思考</h2><p>区块链技术应用场景的设想，<strong>首先判断是否有信任问题需要解决，其次从国家政策方面考虑</strong>。目前看来，区块链技术的最佳实践只有比特币。其他衍生币种、山寨比、彩色币都带有资本炒作的嫌疑。因国内监管的因素，货币类型的区块链应用是无法由我们发起的，要想得到国家的承认，发起方只能是国家银行或者银行业的联盟组织。</p>
+<p>另外，设计区块链技术应用场景<strong>面向的对象应该是多个体（或组织）</strong>。区块链技术解决的是多个个体（或组织）之间的信任问题，对于单个个体（或组织）内部使用区块链替代传统技术可以说是为了技术而用技术，因为个体（或组织）内部对其是完全信任的，不再需要区块链技术再去建立信任关系。</p>
+<p>从信任需求方面考虑，<strong>跨境支付应该是一个好的应用场景</strong>。该场景中使用区块链技术能解决不同国家银行之间的信任问题，理论上来说，是可以省掉中间第三方中转银行的。但是谁来做中间的认证节点是一个问题，比特币引入挖矿让人们充当认证节点去获取利益，这种奖励机制不太适合在银行业应用。另一方面，因为交易数据的安全性与保密性的要求，区块链实现不能是公开链，最好是<strong>有一个可信第三方来维护区块链网络</strong>，现在 Ripple 做的是这个可信第三方。比较搞笑的是，说区块链技术能省掉中间第三方的中转银行，如今又出了一个第三方来维护区块链。</p>
+<p><strong>积分交换</strong>是现阶段常被说到的一个应用场景。但积分交换要看如何设计场景，某银行或某运营商在内部以积分交换试验区块链技术<strong>只能是试验</strong>，为了用技术而是用技术，毕竟消费者对银行或运营商是完全的信任，不再需要额外的信任保证。反而消费者之间交换积分才需要信任保证，这个信任保证其实已经有了银行或运营商来背书。真正实用的积分交换场景是消费者可以与其他消费者交换多个行业内的积分，比如我可以用招行的信用卡积分交换你的建行信用卡积分，或者用我的招行信用卡积分交换你的电信手机号中的积分。不过这也需要一个有权威的规则制定者。</p>
+<p>因此，区块链技术的应用场景还十分有限，除了货币应用之外，其他行业应用都处于摸索阶段，这也源于区块链技术的不成熟。对待新技术，应该<strong>保持审慎</strong>的态度，区块链技术也不例外。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Blockchain/" rel="tag"># Blockchain</a>
+          
+            <a href="/tags/Bitcoin/" rel="tag"># Bitcoin</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/05/31/Power-Analysis-Attacks-on-Smart-Card/" rel="next" title="旁路之能量分析攻击总结">
+                <i class="fa fa-chevron-left"></i> 旁路之能量分析攻击总结
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/09/25/WeChat-Media-Platform-Development-Intro/" rel="prev" title="微信公众平台开发（一）">
+                微信公众平台开发（一） <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/avatar.png" alt="Yaming Gong">
+          <p class="site-author-name" itemprop="name">Yaming Gong</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">63</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">102</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/gymgle" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://twitter.com/gymgle" target="_blank" title="Twitter">
+                  
+                    <i class="fa fa-fw fa-twitter"></i>
+                  
+                  Twitter
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/773662567" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  Weibo
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.flickr.com/photos/gymgle/" target="_blank" title="Flickr">
+                  
+                    <i class="fa fa-fw fa-flickr"></i>
+                  
+                  Flickr
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+          <div class="cc-license motion-element" itemprop="license">
+            <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" target="_blank">
+              <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons">
+            </a>
+          </div>
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-区块链应用场景的思考"><span class="nav-number">1.</span> <span class="nav-text">1. 区块链应用场景的思考</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-能源区块链的思考"><span class="nav-number">2.</span> <span class="nav-text">2. 能源区块链的思考</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-区块链其他应用场景的思考"><span class="nav-number">3.</span> <span class="nav-text">3. 区块链其他应用场景的思考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy;  2012 - 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yaming Gong</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+    <script type="text/javascript">
+      var disqus_shortname = 'g2ex';
+      var disqus_identifier = '2016/09/09/My-Views-on-Blockchain-Scenarios/';
+
+      var disqus_title = "关于区块链应用场景的思考";
+
+
+      function run_disqus_script(disqus_script) {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      }
+
+      run_disqus_script('count.js');
+
+      
+        var disqus_config = function () {
+            this.page.url = disqus_url;
+            this.page.identifier = disqus_identifier;
+            this.page.title = disqus_title;
+        };
+        run_disqus_script('embed.js');
+      
+
+    </script>
+  
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>
